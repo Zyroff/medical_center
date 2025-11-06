@@ -1,0 +1,50 @@
+{% extends 'clinic/base.html' %}
+{% block style%}
+<style>
+    .span-confirmed{
+         background: #d4edda;
+    } 
+    .span-pending {
+        background: #fff3cd;
+    }
+    .span-cancelled {
+        background: #f8d7da;
+    }
+    .span-default {
+        background: #e2e3e5;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<h2>Мои записи на прием</h2>
+
+{% if appointments %}
+<div style="display: grid; gap: 1rem;">
+    {% for appointment in appointments %}
+    <div style="border: 1px solid #ddd; padding: 1rem; border-radius: 5px;">
+        <h3>Запись №{{ appointment.id }}</h3>
+        <p><strong>Врач:</strong> {{ appointment.doctor.user.get_full_name }}</p>
+        <p><strong>Услуга:</strong> {{ appointment.service.name }}</p>
+        <p><strong>Дата и время:</strong> {{ appointment.date_time }}</p>
+        <p><strong>Статус:</strong> 
+            <span  class="{% if appointment.status == 'confirmed' %} span-confirmed 
+                    {% elif appointment.status == 'pending' %} span-pending
+                     {% elif appointment.status == 'cancelled' %} span-cancelled
+                     {% else %} span-default
+                     {% endif %}
+                    "
+            style="padding: 0.2rem 0.5rem; border-radius: 3px;">
+                {{ appointment.get_status_display }}
+            </span>
+        </p>
+        {% if appointment.notes %}
+            <p><strong>Примечания:</strong> {{ appointment.notes }}</p>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<p>У вас пока нет записей на прием.</p>
+<a href="{% url 'appointment_create' %}">Записаться на первый прием</a>
+{% endif %}
+{% endblock %}

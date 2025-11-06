@@ -1,0 +1,17 @@
+{% extends 'clinic/base.html' %}
+
+{% block content %}
+<h2>Наши врачи</h2>
+<div style="display: grid; gap: 1rem;">
+    {% for doctor in doctors %}
+    <div style="border: 1px solid #ddd; padding: 1rem; border-radius: 5px;">
+        <h3>{{ doctor.user.get_full_name }}</h3>
+        <p><strong>Специализация:</strong> {{ doctor.specialization }}</p>
+        <p><strong>Кабинет:</strong> {{ doctor.room }}</p>
+        <p><strong>Стаж:</strong> {{ doctor.experience }} лет</p>
+    </div>
+    {% empty %}
+    <p>Врачи не найдены</p>
+    {% endfor %}
+</div>
+{% endblock %}

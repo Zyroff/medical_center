@@ -1,0 +1,16 @@
+{% extends 'clinic/base.html' %}
+
+{% block content %}
+<h2>Наши услуги</h2>
+<div style="display: grid; gap: 1rem;">
+    {% for service in services %}
+    <div style="border: 1px solid #ddd; padding: 1rem; border-radius: 5px;">
+        <h3>{{ service.name }}</h3>
+        <p><strong>Длительность:</strong> {{ service.duration }} минут</p>
+        <p><strong>Цена:</strong> {{ service.price }} руб.</p>
+    </div>
+    {% empty %}
+    <p>Услуги не найдены</p>
+    {% endfor %}
+</div>
+{% endblock %}
