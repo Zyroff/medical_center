@@ -1,0 +1,86 @@
+{% extends 'clinic/base.html' %}
+{% block style%}
+<style>
+    .span-confirmed{
+         background: #d4edda;
+    } 
+    .span-pending {
+        background: #fff3cd;
+    }
+    .span-cancelled {
+        background: #f8d7da;
+    }
+    .span-default {
+        background: #e2e3e5;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<h2>Мой профиль</h2>
+
+{% if patient %}
+<div style="display: grid; gap: 2rem; grid-template-columns: 1fr 1fr;">
+    
+    <!-- Информация о пациенте -->
+    <div style="border: 1px solid #ddd; padding: 1.5rem; border-radius: 5px;">
+        <h3>Личная информация</h3>
+        <div style="display: grid; gap: 0.5rem;">
+            <p><strong>ФИО:</strong> {{ patient.user.get_full_name }}</p>
+            <p><strong>Имя пользователя:</strong> {{ patient.user.username }}</p>
+            <p><strong>Телефон:</strong> {{ patient.phone }}</p>
+            <p><strong>Дата рождения:</strong> {{ patient.birth_date }}</p>
+            {% if patient.address %}
+                <p><strong>Адрес:</strong> {{ patient.address }}</p>
+            {% endif %}
+            {% if patient.telegram_id %}
+                <p><strong>Telegram ID:</strong> {{ patient.telegram_id }}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Последние записи -->
+    <div style="border: 1px solid #ddd; padding: 1.5rem; border-radius: 5px;">
+        <h3>Последние записи</h3>
+        {% if appointments %}
+            <div style="display: grid; gap: 1rem;">
+                {% for appointment in appointments %}
+                <div style="border-bottom: 1px solid #eee; padding-bottom: 0.5rem;">
+                    <p><strong>{{ appointment.doctor.specialization }}</strong></p>
+                    <p>Доктор: {{ appointment.doctor.user.get_full_name }}</p>
+                    <p>Дата: {{ appointment.date_time|date:"d.m.Y H:i" }}</p>
+                    <p>Статус: 
+                        <span style="
+                            padding: 0.1rem 0.3rem;
+                            border-radius: 3px;
+                            font-size: 0.8rem;
+                        "
+                        class="{% if appointment.status == 'confirmed' %}status-confirmed
+                {% elif appointment.status == 'pending' %}status-pending
+                {% elif appointment.status == 'cancelled' %}status-cancelled
+                {% else %}status-default{% endif %}">
+                            {{ appointment.get_status_display }}
+                        </span>
+                    </p>
+                </div>
+                {% endfor %}
+            </div>
+            <div style="margin-top: 1rem;">
+                <a href="{% url 'appointment_list' %}">Все записи →</a>
+            </div>
+        {% else %}
+            <p>У вас пока нет записей на прием.</p>
+            <a href="{% url 'appointment_create' %}">Записаться на прием</a>
+        {% endif %}
+    </div>
+
+</div>
+
+{% else %}
+<div style="background: #fff3cd; padding: 1.5rem; border-radius: 5px; text-align: center;">
+    <h3>Профиль пациента не найден</h3>
+    <p>Ваш пользователь не привязан к профилю пациента.</p>
+    <p>Обратитесь к администратору для настройки профиля.</p>
+</div>
+{% endif %}
+
+{% endblock %}

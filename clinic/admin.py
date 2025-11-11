@@ -3,8 +3,8 @@ from .models import Patient, Doctor, Service, Appointment, MedicalRecord
 
 @admin.register(Patient)
 class PatientAdmin(admin.ModelAdmin):
-    list_display = ['user', 'phone', 'birth_date']
-    search_fields = ['user__first_name', 'user__last_name', 'phone']
+    list_display = ['user', 'phone', 'birth_date', 'telegram_id']  # ← добавил telegram_id
+    search_fields = ['user__first_name', 'user__last_name', 'phone', 'telegram_id']
 
 @admin.register(Doctor)
 class DoctorAdmin(admin.ModelAdmin):
@@ -29,3 +29,4 @@ class MedicalRecordAdmin(admin.ModelAdmin):
     list_display = ['patient', 'doctor', 'created_at']
     list_filter = ['created_at']
     search_fields = ['patient__user__first_name', 'patient__user__last_name']
+

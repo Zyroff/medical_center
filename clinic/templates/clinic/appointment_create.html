@@ -1,0 +1,56 @@
+{% extends 'clinic/base.html' %}
+
+{% block content %}
+<h2>Запись на прием</h2>
+
+<form method="post">
+    {% csrf_token %}
+    
+    <div style="display: grid; gap: 1rem; max-width: 500px;">
+        <div>
+            <label for="id_doctor">Врач:</label>
+            {{ form.doctor }}
+            {% if form.doctor.errors %}
+                <div style="color: red;">{{ form.doctor.errors }}</div>
+            {% endif %}
+        </div>
+        
+        <div>
+            <label for="id_service">Услуга:</label>
+            {{ form.service }}
+            {% if form.service.errors %}
+                <div style="color: red;">{{ form.service.errors }}</div>
+            {% endif %}
+        </div>
+        
+        <div>
+            <label for="id_date_time">Дата и время:</label>
+            {{ form.date_time }}
+            {% if form.date_time.errors %}
+                <div style="color: red;">{{ form.date_time.errors }}</div>
+            {% endif %}
+            <small>Формат: ГГГГ-ММ-ДД ЧЧ:ММ</small>
+        </div>
+        
+        <div>
+            <label for="id_notes">Примечания:</label>
+            {{ form.notes }}
+        </div>
+        
+        <button type="submit" style="padding: 0.5rem 1rem; background: #2c3e50; color: white; border: none; border-radius: 5px;">
+            Записаться на прием
+        </button>
+    </div>
+</form>
+
+<div style="margin-top: 2rem;">
+    <h3>Как записаться:</h3>
+    <ol>
+        <li>Выберите врача из списка</li>
+        <li>Выберите нужную услугу</li>
+        <li>Укажите удобные дату и время</li>
+        <li>При необходимости добавьте примечания</li>
+        <li>Нажмите "Записаться на прием"</li>
+    </ol>
+</div>
+{% endblock %}

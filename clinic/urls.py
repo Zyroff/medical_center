@@ -8,4 +8,6 @@ urlpatterns = [
     path('appointment/create/', views.AppointmentCreateView.as_view(), name='appointment_create'),
     path('appointments/', views.AppointmentListView.as_view(), name='appointment_list'),
     path('profile/', views.patient_profile, name='patient_profile'),
+    path('telegram/webhook/', views.telegram_webhook, name='telegram_webhook'),
+    path('test-telegram/', views.test_telegram, name='test_telegram'),
 ]

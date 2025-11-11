@@ -10,6 +10,30 @@ class Patient(models.Model):
     birth_date = models.DateField(verbose_name='Дата рождения')
     address = models.TextField(verbose_name='Адрес', blank=True)
     telegram_id = models.CharField(max_length=100, blank=True, verbose_name='Telegram ID')
+
+    def send_telegram_reminder(self, appointment):
+        """Отправка напоминания о приеме"""
+        if not self.telegram_id:
+            return False
+        
+        from .services.telegram_service import telegram_service
+        
+        message = f"""
+🏥 <b>Напоминание о приеме</b>
+
+📅 Дата: {appointment.date_time.strftime('%d.%m.%Y %H:%M')}
+👨‍⚕️ Врач: {appointment.doctor.user.get_full_name()}
+🩺 Услуга: {appointment.service.name}
+
+Подтвердите вашу запись:
+        """
+        
+        keyboard = telegram_service.create_inline_keyboard([
+            telegram_service.create_button('✅ Подтвердить', f'confirm_{appointment.id}'),
+            telegram_service.create_button('🔄 Перенести', f'reschedule_{appointment.id}')
+        ])
+        
+        return telegram_service.send_message(self.telegram_id, message, keyboard)
     
     def __str__(self):
         return f"{self.user.get_full_name()} ({self.phone})"
