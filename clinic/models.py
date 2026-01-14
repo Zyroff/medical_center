@@ -1,3 +1,4 @@
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.contrib.auth.models import User
 from django.urls import reverse
@@ -55,6 +56,47 @@ class Doctor(models.Model):
     class Meta:
         verbose_name = 'Врач'
         verbose_name_plural = 'Врачи'
+
+    description = models.TextField(verbose_name='О враче', blank=True)
+    photo = models.ImageField(
+        upload_to='doctors/', 
+        verbose_name='Фото',
+        blank=True, 
+        null=True
+    )
+    phone = models.CharField(
+        max_length=20, 
+        verbose_name='Телефон', 
+        blank=True
+    )
+    email = models.EmailField(verbose_name='Email', blank=True)
+    rating = models.FloatField(
+        verbose_name='Рейтинг', 
+        default=0.0,
+        validators=[MinValueValidator(0.0), MaxValueValidator(5.0)]
+    )
+    is_active = models.BooleanField(
+        verbose_name='Активен', 
+        default=True
+    )
+    
+    def __str__(self):
+        return f"Доктор {self.user.get_full_name()} - {self.specialization}"
+    
+    @property
+    def full_name(self):
+        return self.user.get_full_name()
+    
+    @property
+    def short_description(self):
+        if self.description:
+            return self.description[:100] + "..." if len(self.description) > 100 else self.description
+        return ""
+    
+    class Meta:
+        verbose_name = 'Врач'
+        verbose_name_plural = 'Врачи'
+        ordering = ['-rating', 'specialization']
 
 class Service(models.Model):
     name = models.CharField(max_length=200, verbose_name='Название услуги')
