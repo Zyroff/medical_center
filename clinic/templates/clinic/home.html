@@ -1,30 +1,88 @@
 {% extends 'clinic/base.html' %}
 
-{% block content %}
-<h2>Добро пожаловать в медицинский центр!</h2>
-<p>Мы предлагаем качественные медицинские услуги и заботу о вашем здоровье.</p>
+{% block title %}Главная - Медицинский центр{% endblock %}
 
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 2rem;">
-    <div>
-        <h3>Наши врачи</h3>
-        <p>Профессиональные специалисты с многолетним опытом</p>
-        <a href="{% url 'doctor_list' %}">Посмотреть всех врачей</a>
+{% block content %}
+<!-- Герой-секция -->
+<section class="hero">
+    <div class="container">
+        <div class="hero-content">
+            <h1>Добро пожаловать в медицинский центр!</h1>
+            <p class="hero-text">Мы предлагаем качественные медицинские услуги и заботу о вашем здоровье.</p>
+        </div>
     </div>
-    
-    <div>
-        <h3>Услуги</h3>
-        <p>Широкий спектр медицинских услуг</p>
-        <a href="{% url 'service_list' %}">Посмотреть услуги</a>
+</section>
+
+<!-- Секция с таблицей (как на макете) -->
+<section class="table-section">
+    <div class="container">
+        <div class="features-table">
+            <!-- Заголовок таблицы -->
+            <div class="table-header">
+                <div class="table-cell">
+                    <h3><i class="fas fa-user-md"></i> Наши врачи</h3>
+                </div>
+                <div class="table-cell">
+                    <h3><i class="fas fa-stethoscope"></i> Услуги</h3>
+                </div>
+                <div class="table-cell">
+                    <h3><i class="fas fa-calendar-plus"></i> Запись на прием</h3>
+                </div>
+            </div>
+            
+            <!-- Содержимое таблицы -->
+            <div class="table-content">
+                <div class="table-cell">
+                    <p>Профессиональные специалисты с многолетним опытом</p>
+                    <a href="{% url 'doctor_list' %}" class="table-btn">
+                        Посмотреть всех врачей <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                
+                <div class="table-cell">
+                    <p>Широкий спектр медицинских услуг</p>
+                    <a href="{% url 'service_list' %}" class="table-btn">
+                        Посмотреть услуги <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                
+                <div class="table-cell">
+                    <p>Запишитесь на прием онлайн</p>
+                    <a href="{% url 'appointment_create' %}" class="table-btn table-btn-primary">
+                        Записаться <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
-    
-    <div>
-        <h3>Запись на прием</h3>
-        <p>Запишитесь на прием онлайн</p>
-        {% if user.is_authenticated %}
-            <a href="{% url 'appointment_create' %}">Записаться</a>
-        {% else %}
-            <a href="{% url 'admin:login' %}">Войдите для записи</a>
-        {% endif %}
+</section>
+
+<!-- Дополнительная информация (можно убрать, если не нужно) -->
+<section class="info">
+    <div class="container">
+        <h2>Почему выбирают наш медицинский центр?</h2>
+        <div class="info-grid">
+            <div class="info-item">
+                <i class="fas fa-award"></i>
+                <h4>Высокое качество</h4>
+                <p>Современное оборудование и проверенные методики лечения</p>
+            </div>
+            <div class="info-item">
+                <i class="fas fa-clock"></i>
+                <h4>Удобное время</h4>
+                <p>Работаем без выходных, запись на удобное для вас время</p>
+            </div>
+            <div class="info-item">
+                <i class="fas fa-map-marker-alt"></i>
+                <h4>Удобное расположение</h4>
+                <p>Наш центр находится в центре города с парковкой</p>
+            </div>
+            <div class="info-item">
+                <i class="fas fa-hand-holding-heart"></i>
+                <h4>Индивидуальный подход</h4>
+                <p>Персональное внимание к каждому пациенту</p>
+            </div>
+        </div>
     </div>
-</div>
+</section>
 {% endblock %}
