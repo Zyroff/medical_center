@@ -1,17 +1,620 @@
 {% extends 'clinic/base.html' %}
 
+{% load static %}  <!-- ДОБАВЬТЕ ЭТУ СТРОКУ! -->
+
+{% block title %}Наши врачи - Медицинский центр «Здоровье»{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Специальные стили для страницы врачей */
+    .doctors-hero {
+        background: linear-gradient(135deg, rgba(75, 108, 183, 0.9), rgba(24, 40, 72, 0.95)), 
+                    url("{% static 'images/doctors-bg.jpg' %}");
+        background-size: cover;
+        background-position: center;
+        color: white;
+        padding: 100px 20px;
+        text-align: center;
+        margin-bottom: 60px;
+    }
+    
+    .doctors-hero h1 {
+        font-size: 3rem;
+        margin-bottom: 20px;
+        color: white;
+    }
+    
+    .doctors-hero p {
+        font-size: 1.2rem;
+        max-width: 600px;
+        margin: 0 auto;
+        opacity: 0.9;
+    }
+    
+    .filter-section {
+        max-width: 1200px;
+        margin: 0 auto 40px;
+        padding: 0 20px;
+    }
+    
+    .filter-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+        margin-bottom: 30px;
+    }
+    
+    .filter-btn {
+        padding: 10px 25px;
+        border: 2px solid #4b6cb7;
+        background: white;
+        color: #4b6cb7;
+        border-radius: 25px;
+        cursor: pointer;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 500;
+        transition: all 0.3s;
+    }
+    
+    .filter-btn:hover,
+    .filter-btn.active {
+        background: #4b6cb7;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(75, 108, 183, 0.3);
+    }
+    
+    .search-box {
+        max-width: 500px;
+        margin: 0 auto;
+        position: relative;
+    }
+    
+    .search-box input {
+        width: 100%;
+        padding: 15px 20px 15px 50px;
+        border: 2px solid #e0e0e0;
+        border-radius: 30px;
+        font-size: 1rem;
+        transition: all 0.3s;
+    }
+    
+    .search-box input:focus {
+        outline: none;
+        border-color: #4b6cb7;
+        box-shadow: 0 0 0 3px rgba(75, 108, 183, 0.1);
+    }
+    
+    .search-box i {
+        position: absolute;
+        left: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #666;
+    }
+    
+    .doctors-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 30px;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+    
+    .doctor-card {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        position: relative;
+    }
+    
+    .doctor-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    }
+    
+    .doctor-header {
+        position: relative;
+        height: 250px;
+        overflow: hidden;
+    }
+    
+    .doctor-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s;
+    }
+    
+    .doctor-card:hover .doctor-image {
+        transform: scale(1.05);
+    }
+    
+    .doctor-category {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: rgba(255,255,255,0.9);
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: #4b6cb7;
+    }
+    
+    .doctor-availability {
+        position: absolute;
+        bottom: 20px;
+        left: 20px;
+        background: #4CAF50;
+        color: white;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+    
+    .doctor-availability.unavailable {
+        background: #f44336;
+    }
+    
+    .doctor-info {
+        padding: 30px;
+    }
+    
+    .doctor-name {
+        font-size: 1.5rem;
+        margin-bottom: 5px;
+        color: #182848;
+    }
+    
+    .doctor-specialty {
+        color: #4b6cb7;
+        font-weight: 600;
+        margin-bottom: 15px;
+        font-size: 1.1rem;
+    }
+    
+    .doctor-details {
+        margin-bottom: 20px;
+    }
+    
+    .detail-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+        color: #555;
+    }
+    
+    .detail-item i {
+        width: 25px;
+        color: #4b6cb7;
+        margin-right: 10px;
+    }
+    
+    .doctor-rating {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    
+    .stars {
+        color: #FFD700;
+        margin-right: 10px;
+    }
+    
+    .rating-text {
+        color: #666;
+        font-size: 0.9rem;
+    }
+    
+    .doctor-actions {
+        display: flex;
+        gap: 10px;
+    }
+    
+    .btn-outline {
+        background: transparent;
+        border: 2px solid #4b6cb7;
+        color: #4b6cb7;
+    }
+    
+    .btn-outline:hover {
+        background: #4b6cb7;
+        color: white;
+    }
+    
+    .no-results {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 60px 20px;
+        color: #666;
+    }
+    
+    .no-results i {
+        font-size: 4rem;
+        margin-bottom: 20px;
+        color: #ddd;
+    }
+    
+    .pagination {
+        display: flex;
+        justify-content: center;
+        margin-top: 50px;
+        gap: 10px;
+    }
+    
+    .page-link {
+        padding: 10px 15px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        text-decoration: none;
+        color: #333;
+        transition: all 0.3s;
+    }
+    
+    .page-link:hover,
+    .page-link.active {
+        background: #4b6cb7;
+        color: white;
+        border-color: #4b6cb7;
+    }
+    
+    @media (max-width: 768px) {
+        .doctors-hero {
+            padding: 60px 20px;
+        }
+        
+        .doctors-hero h1 {
+            font-size: 2.2rem;
+        }
+        
+        .doctors-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .doctor-actions {
+            flex-direction: column;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<h2>Наши врачи</h2>
-<div style="display: grid; gap: 1rem;">
-    {% for doctor in doctors %}
-    <div style="border: 1px solid #ddd; padding: 1rem; border-radius: 5px;">
-        <h3>{{ doctor.user.get_full_name }}</h3>
-        <p><strong>Специализация:</strong> {{ doctor.specialization }}</p>
-        <p><strong>Кабинет:</strong> {{ doctor.room }}</p>
-        <p><strong>Стаж:</strong> {{ doctor.experience }} лет</p>
+<!-- Герой-секция для страницы врачей -->
+<section class="doctors-hero">
+    <div class="container">
+        <h1>Наши врачи</h1>
+        <p>В нашем центре работают высококвалифицированные специалисты с многолетним опытом, готовые помочь вам в любой ситуации.</p>
     </div>
-    {% empty %}
-    <p>Врачи не найдены</p>
-    {% endfor %}
+</section>
+
+<!-- Фильтры и поиск -->
+<div class="filter-section">
+    <div class="filter-buttons">
+        <button class="filter-btn active" data-specialty="all">Все врачи</button>
+        <button class="filter-btn" data-specialty="Кардиолог">Кардиологи</button>
+        <button class="filter-btn" data-specialty="Терапевт">Терапевты</button>
+        <button class="filter-btn" data-specialty="Хирург">Хирурги</button>
+        <button class="filter-btn" data-specialty="Невролог">Неврологи</button>
+        <button class="filter-btn" data-specialty="Офтальмолог">Офтальмологи</button>
+        <button class="filter-btn" data-specialty="Стоматолог">Стоматологи</button>
+    </div>
+    
+    <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" id="doctor-search" placeholder="Поиск врача по имени или специализации...">
+    </div>
 </div>
+
+<!-- Сетка врачей -->
+<div class="doctors-grid" id="doctors-container">
+    <!-- Карточка врача 1 -->
+    <div class="doctor-card" data-specialty="Кардиолог" data-name="Мария Сидорова">
+        <div class="doctor-header">
+            {% if doctor_images.0 %}
+            <img src="{% static 'images/doctors/doctor1.jpg' %}" alt="Мария Сидорова" class="doctor-image">
+            {% else %}
+            <div class="doctor-image" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 4rem;">
+                <i class="fas fa-user-md"></i>
+            </div>
+            {% endif %}
+            <div class="doctor-category">Высшая категория</div>
+            <div class="doctor-availability">Принимает сейчас</div>
+        </div>
+        <div class="doctor-info">
+            <h3 class="doctor-name">Др. Мария Сидорова</h3>
+            <p class="doctor-specialty">Кардиолог</p>
+            
+            <div class="doctor-details">
+                <div class="detail-item">
+                    <i class="fas fa-briefcase-medical"></i>
+                    <span>Стаж работы: <strong>15 лет</strong></span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-door-closed"></i>
+                    <span>Кабинет: <strong>102</strong></span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>МГМУ им. Сеченова</span>
+                </div>
+            </div>
+            
+            <div class="doctor-rating">
+                <div class="stars">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star-half-alt"></i>
+                </div>
+                <span class="rating-text">4.7 (148 отзывов)</span>
+            </div>
+            
+            <div class="doctor-actions">
+                <a href="#" class="btn btn-outline">
+                    <i class="fas fa-info-circle"></i> Подробнее
+                </a>
+                <a href="{% url 'appointment_create' %}" class="btn btn-primary">
+                    <i class="fas fa-calendar-check"></i> Записаться
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Карточка врача 2 -->
+    <div class="doctor-card" data-specialty="Терапевт" data-name="Иван Петров">
+        <div class="doctor-header">
+            {% if doctor_images.1 %}
+            <img src="{% static 'images/doctors/doctor2.jpg' %}" alt="Иван Петров" class="doctor-image">
+            {% else %}
+            <div class="doctor-image" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 4rem;">
+                <i class="fas fa-user-md"></i>
+            </div>
+            {% endif %}
+            <div class="doctor-category">Первая категория</div>
+            <div class="doctor-availability">Принимает сейчас</div>
+        </div>
+        <div class="doctor-info">
+            <h3 class="doctor-name">Др. Иван Петров</h3>
+            <p class="doctor-specialty">Терапевт</p>
+            
+            <div class="doctor-details">
+                <div class="detail-item">
+                    <i class="fas fa-briefcase-medical"></i>
+                    <span>Стаж работы: <strong>10 лет</strong></span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-door-closed"></i>
+                    <span>Кабинет: <strong>101</strong></span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>РНИМУ им. Пирогова</span>
+                </div>
+            </div>
+            
+            <div class="doctor-rating">
+                <div class="stars">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="far fa-star"></i>
+                </div>
+                <span class="rating-text">4.2 (89 отзывов)</span>
+            </div>
+            
+            <div class="doctor-actions">
+                <a href="#" class="btn btn-outline">
+                    <i class="fas fa-info-circle"></i> Подробнее
+                </a>
+                <a href="{% url 'appointment_create' %}" class="btn btn-primary">
+                    <i class="fas fa-calendar-check"></i> Записаться
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Карточка врача 3 -->
+    <div class="doctor-card" data-specialty="Хирург" data-name="Алексей Козлов">
+        <div class="doctor-header">
+            {% if doctor_images.2 %}
+            <img src="{% static 'images/doctors/doctor3.jpg' %}" alt="Алексей Козлов" class="doctor-image">
+            {% else %}
+            <div class="doctor-image" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 4rem;">
+                <i class="fas fa-user-md"></i>
+            </div>
+            {% endif %}
+            <div class="doctor-category">Высшая категория</div>
+            <div class="doctor-availability unavailable">Не принимает</div>
+        </div>
+        <div class="doctor-info">
+            <h3 class="doctor-name">Др. Алексей Козлов</h3>
+            <p class="doctor-specialty">Хирург</p>
+            
+            <div class="doctor-details">
+                <div class="detail-item">
+                    <i class="fas fa-briefcase-medical"></i>
+                    <span>Стаж работы: <strong>8 лет</strong></span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-door-closed"></i>
+                    <span>Кабинет: <strong>201</strong></span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>МГМСУ им. Евдокимова</span>
+                </div>
+            </div>
+            
+            <div class="doctor-rating">
+                <div class="stars">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                </div>
+                <span class="rating-text">5.0 (203 отзыва)</span>
+            </div>
+            
+            <div class="doctor-actions">
+                <a href="#" class="btn btn-outline">
+                    <i class="fas fa-info-circle"></i> Подробнее
+                </a>
+                <a href="{% url 'appointment_create' %}" class="btn btn-primary" style="opacity: 0.7;">
+                    <i class="fas fa-calendar-check"></i> Записаться
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Добавим ещё врачей для примера -->
+    <div class="doctor-card" data-specialty="Невролог" data-name="Ольга Смирнова">
+        <div class="doctor-header">
+            <div class="doctor-image" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 4rem;">
+                <i class="fas fa-user-md"></i>
+            </div>
+            <div class="doctor-category">Кандидат наук</div>
+            <div class="doctor-availability">Принимает сейчас</div>
+        </div>
+        <div class="doctor-info">
+            <h3 class="doctor-name">Др. Ольга Смирнова</h3>
+            <p class="doctor-specialty">Невролог</p>
+            
+            <div class="doctor-details">
+                <div class="detail-item">
+                    <i class="fas fa-briefcase-medical"></i>
+                    <span>Стаж работы: <strong>12 лет</strong></span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-door-closed"></i>
+                    <span>Кабинет: <strong>205</strong></span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>Московский медицинский университет</span>
+                </div>
+            </div>
+            
+            <div class="doctor-rating">
+                <div class="stars">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star-half-alt"></i>
+                </div>
+                <span class="rating-text">4.8 (167 отзывов)</span>
+            </div>
+            
+            <div class="doctor-actions">
+                <a href="#" class="btn btn-outline">
+                    <i class="fas fa-info-circle"></i> Подробнее
+                </a>
+                <a href="{% url 'appointment_create' %}" class="btn btn-primary">
+                    <i class="fas fa-calendar-check"></i> Записаться
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Пагинация -->
+<div class="pagination">
+    <a href="#" class="page-link active">1</a>
+    <a href="#" class="page-link">2</a>
+    <a href="#" class="page-link">3</a>
+    <span>...</span>
+    <a href="#" class="page-link">5</a>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Фильтрация по специализации
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const doctorCards = document.querySelectorAll('.doctor-card');
+    const searchInput = document.getElementById('doctor-search');
+    
+    // Обработка фильтров
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            // Снимаем активный класс со всех кнопок
+            filterBtns.forEach(b => b.classList.remove('active'));
+            // Добавляем активный класс текущей кнопке
+            this.classList.add('active');
+            
+            const specialty = this.dataset.specialty;
+            filterDoctors(specialty, searchInput.value);
+        });
+    });
+    
+    // Обработка поиска
+    searchInput.addEventListener('input', function() {
+        const activeFilter = document.querySelector('.filter-btn.active');
+        const specialty = activeFilter ? activeFilter.dataset.specialty : 'all';
+        filterDoctors(specialty, this.value);
+    });
+    
+    function filterDoctors(specialty, searchTerm) {
+        let visibleCount = 0;
+        
+        doctorCards.forEach(card => {
+            const cardSpecialty = card.dataset.specialty;
+            const cardName = card.dataset.name.toLowerCase();
+            const searchLower = searchTerm.toLowerCase();
+            
+            const matchesSpecialty = specialty === 'all' || cardSpecialty === specialty;
+            const matchesSearch = !searchTerm || 
+                                 cardName.includes(searchLower) || 
+                                 cardSpecialty.toLowerCase().includes(searchLower);
+            
+            if (matchesSpecialty && matchesSearch) {
+                card.style.display = 'block';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+        
+        // Показываем сообщение, если ничего не найдено
+        let noResultsMsg = document.querySelector('.no-results');
+        if (visibleCount === 0) {
+            if (!noResultsMsg) {
+                noResultsMsg = document.createElement('div');
+                noResultsMsg.className = 'no-results';
+                noResultsMsg.innerHTML = `
+                    <i class="fas fa-search"></i>
+                    <h3>Врачи не найдены</h3>
+                    <p>Попробуйте изменить параметры поиска</p>
+                `;
+                document.getElementById('doctors-container').appendChild(noResultsMsg);
+            }
+        } else if (noResultsMsg) {
+            noResultsMsg.remove();
+        }
+    }
+    
+    // Анимация при наведении на карточки
+    doctorCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-10px)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            if (this.style.display !== 'none') {
+                this.style.transform = 'translateY(0)';
+            }
+        });
+    });
+});
+</script>
 {% endblock %}

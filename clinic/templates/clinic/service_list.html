@@ -1,16 +1,736 @@
 {% extends 'clinic/base.html' %}
 
+{% load static %}
+
+{% block title %}Услуги и цены - Медицинский центр «Здоровье»{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Герой-секция для услуг */
+    .services-hero {
+        background: linear-gradient(135deg, rgba(91, 228, 155, 0.9), rgba(30, 130, 76, 0.95));
+        color: white;
+        padding: 100px 20px;
+        text-align: center;
+        margin-bottom: 60px;
+    }
+    
+    .services-hero h1 {
+        font-size: 3rem;
+        margin-bottom: 20px;
+        color: white;
+    }
+    
+    .services-hero p {
+        font-size: 1.2rem;
+        max-width: 600px;
+        margin: 0 auto;
+        opacity: 0.9;
+    }
+    
+    /* Категории услуг */
+    .categories-section {
+        max-width: 1200px;
+        margin: 0 auto 40px;
+        padding: 0 20px;
+    }
+    
+    .categories-title {
+        text-align: center;
+        margin-bottom: 30px;
+        color: #182848;
+    }
+    
+    .categories-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+        margin-bottom: 40px;
+    }
+    
+    .category-btn {
+        padding: 15px 10px;
+        background: white;
+        border: 2px solid #e0e0e0;
+        border-radius: 15px;
+        cursor: pointer;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 500;
+        transition: all 0.3s;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .category-btn:hover,
+    .category-btn.active {
+        background: #5be49b;
+        border-color: #5be49b;
+        color: white;
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(91, 228, 155, 0.3);
+    }
+    
+    .category-icon {
+        font-size: 1.8rem;
+    }
+    
+    /* Поиск и фильтры */
+    .filters-section {
+        max-width: 1200px;
+        margin: 0 auto 40px;
+        padding: 0 20px;
+    }
+    
+    .search-box {
+        max-width: 500px;
+        margin: 0 auto 30px;
+        position: relative;
+    }
+    
+    .search-box input {
+        width: 100%;
+        padding: 15px 20px 15px 50px;
+        border: 2px solid #e0e0e0;
+        border-radius: 30px;
+        font-size: 1rem;
+        transition: all 0.3s;
+    }
+    
+    .search-box input:focus {
+        outline: none;
+        border-color: #5be49b;
+        box-shadow: 0 0 0 3px rgba(91, 228, 155, 0.1);
+    }
+    
+    .search-box i {
+        position: absolute;
+        left: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #666;
+    }
+    
+    .price-filter {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+    
+    .price-filter input {
+        padding: 10px 15px;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        width: 120px;
+    }
+    
+    /* Сетка услуг */
+    .services-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 30px;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+    
+    .service-card {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        position: relative;
+    }
+    
+    .service-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    }
+    
+    .service-card.popular::before {
+        content: 'Популярная';
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: #ff6b6b;
+        color: white;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        z-index: 1;
+    }
+    
+    .service-header {
+        position: relative;
+        height: 200px;
+        overflow: hidden;
+    }
+    
+    .service-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s;
+    }
+    
+    .service-card:hover .service-image {
+        transform: scale(1.05);
+    }
+    
+    .service-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.7));
+        display: flex;
+        align-items: flex-end;
+        padding: 20px;
+    }
+    
+    .service-duration {
+        background: rgba(255,255,255,0.9);
+        padding: 5px 15px;
+        border-radius: 15px;
+        font-weight: 600;
+        color: #1e824c;
+    }
+    
+    .service-content {
+        padding: 30px;
+    }
+    
+    .service-name {
+        font-size: 1.5rem;
+        margin-bottom: 15px;
+        color: #182848;
+        line-height: 1.3;
+    }
+    
+    .service-category {
+        display: inline-block;
+        background: #e8f5e9;
+        color: #1e824c;
+        padding: 5px 15px;
+        border-radius: 15px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 15px;
+    }
+    
+    .service-description {
+        color: #666;
+        margin-bottom: 20px;
+        line-height: 1.6;
+    }
+    
+    .service-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid #eee;
+    }
+    
+    .service-price {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #1e824c;
+    }
+    
+    .service-price small {
+        font-size: 1rem;
+        color: #666;
+        font-weight: 400;
+    }
+    
+    .service-actions {
+        display: flex;
+        gap: 10px;
+    }
+    
+    .btn-book {
+        background: #5be49b;
+        color: white;
+    }
+    
+    .btn-book:hover {
+        background: #4bc887;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(91, 228, 155, 0.3);
+    }
+    
+    .btn-info {
+        background: transparent;
+        border: 2px solid #5be49b;
+        color: #5be49b;
+    }
+    
+    .btn-info:hover {
+        background: #5be49b;
+        color: white;
+    }
+    
+    /* Баннер акции */
+    .promo-banner {
+        max-width: 1200px;
+        margin: 60px auto;
+        padding: 0 20px;
+    }
+    
+    .promo-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 20px;
+        padding: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 30px;
+    }
+    
+    .promo-content h3 {
+        font-size: 2rem;
+        margin-bottom: 10px;
+    }
+    
+    .promo-content p {
+        opacity: 0.9;
+        margin-bottom: 20px;
+    }
+    
+    .promo-badge {
+        background: #ff6b6b;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 1.2rem;
+        display: inline-block;
+    }
+    
+    /* Адаптивность */
+    @media (max-width: 768px) {
+        .services-hero {
+            padding: 60px 20px;
+        }
+        
+        .services-hero h1 {
+            font-size: 2.2rem;
+        }
+        
+        .categories-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .services-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .promo-card {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .service-footer {
+            flex-direction: column;
+            gap: 15px;
+            align-items: stretch;
+        }
+        
+        .service-actions {
+            flex-direction: column;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<h2>Наши услуги</h2>
-<div style="display: grid; gap: 1rem;">
-    {% for service in services %}
-    <div style="border: 1px solid #ddd; padding: 1rem; border-radius: 5px;">
-        <h3>{{ service.name }}</h3>
-        <p><strong>Длительность:</strong> {{ service.duration }} минут</p>
-        <p><strong>Цена:</strong> {{ service.price }} руб.</p>
+<!-- Герой-секция -->
+<section class="services-hero">
+    <div class="container">
+        <h1>Услуги и цены</h1>
+        <p>Широкий спектр медицинских услуг по доступным ценам с использованием современного оборудования</p>
     </div>
-    {% empty %}
-    <p>Услуги не найдены</p>
-    {% endfor %}
+</section>
+
+<!-- Категории услуг -->
+<div class="categories-section">
+    <h2 class="categories-title">Категории услуг</h2>
+    <div class="categories-grid">
+        <button class="category-btn active" data-category="all">
+            <i class="fas fa-all category-icon"></i>
+            Все услуги
+        </button>
+        <button class="category-btn" data-category="consultation">
+            <i class="fas fa-stethoscope category-icon"></i>
+            Консультации
+        </button>
+        <button class="category-btn" data-category="diagnostics">
+            <i class="fas fa-microscope category-icon"></i>
+            Диагностика
+        </button>
+        <button class="category-btn" data-category="ultrasound">
+            <i class="fas fa-wave-square category-icon"></i>
+            УЗИ
+        </button>
+        <button class="category-btn" data-category="analysis">
+            <i class="fas fa-vial category-icon"></i>
+            Анализы
+        </button>
+        <button class="category-btn" data-category="therapy">
+            <i class="fas fa-hand-holding-medical category-icon"></i>
+            Физиотерапия
+        </button>
+    </div>
 </div>
+
+<!-- Поиск и фильтры -->
+<div class="filters-section">
+    <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" id="service-search" placeholder="Поиск услуги...">
+    </div>
+    
+    <div class="price-filter">
+        <span>Цена от:</span>
+        <input type="number" id="min-price" placeholder="0" min="0">
+        <span>до:</span>
+        <input type="number" id="max-price" placeholder="10000" min="0">
+        <button class="btn btn-primary" id="apply-price">Применить</button>
+        <button class="btn btn-outline" id="reset-price">Сбросить</button>
+    </div>
+</div>
+
+<!-- Сетка услуг -->
+<div class="services-grid" id="services-container">
+    <!-- Услуга 1 -->
+    <div class="service-card" data-category="consultation" data-price="1500">
+        <div class="service-header">
+            <img src="{% static 'images/services/therapist.jpg' %}" alt="Консультация терапевта" class="service-image">
+            <div class="service-overlay">
+                <span class="service-duration">30 минут</span>
+            </div>
+        </div>
+        <div class="service-content">
+            <span class="service-category">Консультация</span>
+            <h3 class="service-name">Консультация терапевта</h3>
+            <p class="service-description">Полное обследование, сбор анамнеза, постановка предварительного диагноза и назначение лечения.</p>
+            <div class="service-footer">
+                <div class="service-price">
+                    1 500 <small>руб.</small>
+                </div>
+                <div class="service-actions">
+                    <a href="{% url 'appointment_create' %}?service=1" class="btn btn-book">
+                        <i class="fas fa-calendar-check"></i> Записаться
+                    </a>
+                    <button class="btn btn-info" data-service="1">
+                        <i class="fas fa-info-circle"></i> Подробнее
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Услуга 2 -->
+    <div class="service-card popular" data-category="consultation" data-price="2000">
+        <div class="service-header">
+            <img src="{% static 'images/services/cardiologist.jpg' %}" alt="Консультация кардиолога" class="service-image">
+            <div class="service-overlay">
+                <span class="service-duration">45 минут</span>
+            </div>
+        </div>
+        <div class="service-content">
+            <span class="service-category">Консультация</span>
+            <h3 class="service-name">Консультация кардиолога</h3>
+            <p class="service-description">Обследование сердечно-сосудистой системы, расшифровка ЭКГ, рекомендации по профилактике.</p>
+            <div class="service-footer">
+                <div class="service-price">
+                    2 000 <small>руб.</small>
+                </div>
+                <div class="service-actions">
+                    <a href="{% url 'appointment_create' %}?service=2" class="btn btn-book">
+                        <i class="fas fa-calendar-check"></i> Записаться
+                    </a>
+                    <button class="btn btn-info" data-service="2">
+                        <i class="fas fa-info-circle"></i> Подробнее
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Услуга 3 -->
+    <div class="service-card" data-category="ultrasound" data-price="2500">
+        <div class="service-header">
+            <img src="{% static 'images/services/ultrasound.jpg' %}" alt="УЗИ брюшной полости" class="service-image">
+            <div class="service-overlay">
+                <span class="service-duration">60 минут</span>
+            </div>
+        </div>
+        <div class="service-content">
+            <span class="service-category">УЗИ диагностика</span>
+            <h3 class="service-name">УЗИ брюшной полости</h3>
+            <p class="service-description">Комплексное исследование органов брюшной полости: печень, желчный пузырь, поджелудочная железа, селезенка, почки.</p>
+            <div class="service-footer">
+                <div class="service-price">
+                    2 500 <small>руб.</small>
+                </div>
+                <div class="service-actions">
+                    <a href="{% url 'appointment_create' %}?service=3" class="btn btn-book">
+                        <i class="fas fa-calendar-check"></i> Записаться
+                    </a>
+                    <button class="btn btn-info" data-service="3">
+                        <i class="fas fa-info-circle"></i> Подробнее
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Услуга 4 -->
+    <div class="service-card" data-category="diagnostics" data-price="1200">
+        <div class="service-header">
+            <img src="{% static 'images/services/ecg.jpg' %}" alt="ЭКГ" class="service-image">
+            <div class="service-overlay">
+                <span class="service-duration">30 минут</span>
+            </div>
+        </div>
+        <div class="service-content">
+            <span class="service-category">Диагностика</span>
+            <h3 class="service-name">Электрокардиография (ЭКГ)</h3>
+            <p class="service-description">Регистрация электрической активности сердца для оценки его работы и выявления патологий.</p>
+            <div class="service-footer">
+                <div class="service-price">
+                    1 200 <small>руб.</small>
+                </div>
+                <div class="service-actions">
+                    <a href="{% url 'appointment_create' %}?service=4" class="btn btn-book">
+                        <i class="fas fa-calendar-check"></i> Записаться
+                    </a>
+                    <button class="btn btn-info" data-service="4">
+                        <i class="fas fa-info-circle"></i> Подробнее
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Услуга 5 -->
+    <div class="service-card" data-category="analysis" data-price="800">
+        <div class="service-header">
+            <div class="service-image" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 4rem;">
+                <i class="fas fa-vial-virus"></i>
+            </div>
+            <div class="service-overlay">
+                <span class="service-duration">15 минут</span>
+            </div>
+        </div>
+        <div class="service-content">
+            <span class="service-category">Лаборатория</span>
+            <h3 class="service-name">Общий анализ крови</h3>
+            <p class="service-description">Базовое исследование крови для оценки общего состояния здоровья и выявления воспалительных процессов.</p>
+            <div class="service-footer">
+                <div class="service-price">
+                    800 <small>руб.</small>
+                </div>
+                <div class="service-actions">
+                    <a href="{% url 'appointment_create' %}?service=5" class="btn btn-book">
+                        <i class="fas fa-calendar-check"></i> Записаться
+                    </a>
+                    <button class="btn btn-info" data-service="5">
+                        <i class="fas fa-info-circle"></i> Подробнее
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Услуга 6 -->
+    <div class="service-card" data-category="therapy" data-price="1800">
+        <div class="service-header">
+            <div class="service-image" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 4rem;">
+                <i class="fas fa-hand-holding-water"></i>
+            </div>
+            <div class="service-overlay">
+                <span class="service-duration">45 минут</span>
+            </div>
+        </div>
+        <div class="service-content">
+            <span class="service-category">Физиотерапия</span>
+            <h3 class="service-name">Магнитотерапия</h3>
+            <p class="service-description">Лечение переменным магнитным полем для снятия боли, уменьшения воспаления и улучшения кровообращения.</p>
+            <div class="service-footer">
+                <div class="service-price">
+                    1 800 <small>руб.</small>
+                </div>
+                <div class="service-actions">
+                    <a href="{% url 'appointment_create' %}?service=6" class="btn btn-book">
+                        <i class="fas fa-calendar-check"></i> Записаться
+                    </a>
+                    <button class="btn btn-info" data-service="6">
+                        <i class="fas fa-info-circle"></i> Подробнее
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Баннер акции -->
+<div class="promo-banner">
+    <div class="promo-card">
+        <div class="promo-content">
+            <div class="promo-badge">-20%</div>
+            <h3>Скидка на комплексное обследование</h3>
+            <p>При единовременной записи на 3 и более услуг получите скидку 20% на весь комплекс</p>
+            <a href="{% url 'appointment_create' %}" class="btn btn-primary">
+                <i class="fas fa-gift"></i> Получить скидку
+            </a>
+        </div>
+        <div class="promo-image">
+            <i class="fas fa-heartbeat fa-5x"></i>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Элементы DOM
+    const categoryBtns = document.querySelectorAll('.category-btn');
+    const serviceCards = document.querySelectorAll('.service-card');
+    const searchInput = document.getElementById('service-search');
+    const minPriceInput = document.getElementById('min-price');
+    const maxPriceInput = document.getElementById('max-price');
+    const applyPriceBtn = document.getElementById('apply-price');
+    const resetPriceBtn = document.getElementById('reset-price');
+    
+    // Фильтрация по категориям
+    categoryBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            categoryBtns.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            filterServices();
+        });
+    });
+    
+    // Поиск по названию
+    searchInput.addEventListener('input', filterServices);
+    
+    // Фильтр по цене
+    applyPriceBtn.addEventListener('click', filterServices);
+    resetPriceBtn.addEventListener('click', function() {
+        minPriceInput.value = '';
+        maxPriceInput.value = '';
+        filterServices();
+    });
+    
+    // Кнопка "Подробнее"
+    document.querySelectorAll('.btn-info').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const serviceId = this.dataset.service;
+            // Здесь можно открыть модальное окно с детальной информацией
+            alert(`Подробная информация об услуге #${serviceId}`);
+        });
+    });
+    
+    // Основная функция фильтрации
+    function filterServices() {
+        const activeCategory = document.querySelector('.category-btn.active').dataset.category;
+        const searchTerm = searchInput.value.toLowerCase();
+        const minPrice = parseInt(minPriceInput.value) || 0;
+        const maxPrice = parseInt(maxPriceInput.value) || Infinity;
+        
+        let visibleCount = 0;
+        
+        serviceCards.forEach(card => {
+            const cardCategory = card.dataset.category;
+            const cardPrice = parseInt(card.dataset.price);
+            const cardName = card.querySelector('.service-name').textContent.toLowerCase();
+            const cardDescription = card.querySelector('.service-description').textContent.toLowerCase();
+            
+            // Проверка категории
+            const matchesCategory = activeCategory === 'all' || cardCategory === activeCategory;
+            
+            // Проверка поиска
+            const matchesSearch = !searchTerm || 
+                                 cardName.includes(searchTerm) ||
+                                 cardDescription.includes(searchTerm);
+            
+            // Проверка цены
+            const matchesPrice = cardPrice >= minPrice && cardPrice <= maxPrice;
+            
+            if (matchesCategory && matchesSearch && matchesPrice) {
+                card.style.display = 'block';
+                visibleCount++;
+                // Анимация появления
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'opacity 0.5s, transform 0.5s';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, 50 * visibleCount);
+            } else {
+                card.style.display = 'none';
+            }
+        });
+        
+        // Сообщение, если ничего не найдено
+        showNoResultsMessage(visibleCount);
+    }
+    
+    function showNoResultsMessage(visibleCount) {
+        let noResultsMsg = document.querySelector('.no-results');
+        
+        if (visibleCount === 0) {
+            if (!noResultsMsg) {
+                noResultsMsg = document.createElement('div');
+                noResultsMsg.className = 'no-results';
+                noResultsMsg.style.cssText = `
+                    grid-column: 1 / -1;
+                    text-align: center;
+                    padding: 60px 20px;
+                    color: #666;
+                `;
+                noResultsMsg.innerHTML = `
+                    <i class="fas fa-search fa-4x" style="margin-bottom: 20px; color: #ddd;"></i>
+                    <h3 style="margin-bottom: 10px;">Услуги не найдены</h3>
+                    <p>Попробуйте изменить параметры поиска или выбрать другую категорию</p>
+                `;
+                document.getElementById('services-container').appendChild(noResultsMsg);
+            }
+        } else if (noResultsMsg) {
+            noResultsMsg.remove();
+        }
+    }
+    
+    // Инициализация
+    filterServices();
+});
+</script>
+
+<div class="service-actions">
+    <a href="{% url 'appointment_create' %}?service=1" 
+       class="btn btn-book"
+       style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 20px; background: #5be49b; color: white; border-radius: 25px; text-decoration: none; font-weight: 600; font-family: 'Montserrat', sans-serif;">
+        <i class="fas fa-calendar-check"></i> Записаться
+    </a>
+    <button class="btn btn-info" 
+            data-service="1"
+            style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 20px; background: transparent; border: 2px solid #5be49b; color: #5be49b; border-radius: 25px; font-weight: 600; font-family: 'Montserrat', sans-serif;">
+        <i class="fas fa-info-circle"></i> Подробнее
+    </button>
+</div>
+
 {% endblock %}
