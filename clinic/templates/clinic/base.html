@@ -3,48 +3,224 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Медицинский центр</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
-        .header { background: #2c3e50; color: white; padding: 1rem; }
-        .nav { display: flex; gap: 1rem; }
-        .nav a { color: white; text-decoration: none; }
-        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
-        .messages { padding: 1rem; margin: 1rem 0; border-radius: 5px; }
-        .success { background: #d4edda; color: #155724; }
-        .error { background: #f8d7da; color: #721c24; }
-    </style>
-    {%block style%}{%endblock%}
+    <title>{% block title %}Медицинский центр «Здоровье»{% endblock %}</title>
+    
+    {% load static %}
+    
+    <!-- Иконки Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Шрифты Google -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Open+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <!-- Наши стили -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/theme.css' %}">
+    
+    {% block extra_css %}{% endblock %}
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
 </head>
 <body>
-    <div class="header">
+    <!-- Верхняя панель -->
+    <div class="top-bar">
         <div class="container">
-            <h1>Медицинский центр</h1>
-            <div class="nav">
-                <a href="{% url 'home' %}">Главная</a>
-                <a href="{% url 'doctor_list' %}">Врачи</a>
-                <a href="{% url 'service_list' %}">Услуги</a>
-                {% if user.is_authenticated %}
-                    <a href="{% url 'appointment_create' %}">Записаться</a>
-                    <a href="{% url 'appointment_list' %}">Мои записи</a>
-                    <a href="{% url 'patient_profile' %}">Профиль</a>
-                    <a href="{% url 'admin:logout' %}">Выйти ({{ user.username }})</a>
-                {% else %}
-                    <a href="{% url 'admin:login' %}">Войти</a>
-                {% endif %}
+            <div class="top-bar-content">
+                <div class="contact-info">
+                    <span><i class="fas fa-phone"></i> +7 (495) 123-45-67</span>
+                    <span><i class="fas fa-clock"></i> Пн-Пт: 8:00-20:00, Сб-Вс: 9:00-18:00</span>
+                </div>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-vk"></i></a>
+                    <a href="#"><i class="fab fa-telegram"></i></a>
+                    <a href="#"><i class="fab fa-whatsapp"></i></a>
+                </div>
             </div>
         </div>
     </div>
-    
-    <div class="container">
-        {% if messages %}
+
+    <!-- Основная шапка -->
+    <header class="main-header">
+        <div class="container">
+            <div class="header-content">
+                <!-- Логотип -->
+                <a href="{% url 'home' %}" class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                    <div class="logo-text">
+                        <span class="logo-title">Медицинский центр</span>
+                        <span class="logo-subtitle">«Здоровье»</span>
+                    </div>
+                </a>
+
+                <!-- Основная навигация -->
+                <nav class="main-nav">
+                    <ul class="nav-list">
+                        <li><a href="{% url 'home' %}" class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+                            <i class="fas fa-home"></i> Главная
+                        </a></li>
+                        <li><a href="{% url 'doctor_list' %}" class="nav-link {% if request.resolver_match.url_name == 'doctor_list' %}active{% endif %}">
+                            <i class="fas fa-user-md"></i> Врачи
+                        </a></li>
+                        <li><a href="{% url 'service_list' %}" class="nav-link {% if request.resolver_match.url_name == 'service_list' %}active{% endif %}">
+                            <i class="fas fa-stethoscope"></i> Услуги
+                        </a></li>
+                        <li><a href="{% url 'appointment_create' %}" class="nav-link {% if request.resolver_match.url_name == 'appointment_create' %}active{% endif %}">
+                            <i class="fas fa-calendar-check"></i> Записаться
+                        </a></li>
+                        
+                        {% if user.is_authenticated %}
+                        <li><a href="{% url 'appointment_list' %}" class="nav-link {% if request.resolver_match.url_name == 'appointment_list' %}active{% endif %}">
+                            <i class="fas fa-calendar-alt"></i> Мои записи
+                        </a></li>
+                        <li class="nav-dropdown">
+                            <a href="#" class="nav-link user-profile">
+                                <i class="fas fa-user-circle"></i> {{ user.username }}
+                                <i class="fas fa-chevron-down"></i>
+                            </a>
+                            <div class="dropdown-menu">
+                                <a href="{% url 'patient_profile' %}"><i class="fas fa-user"></i> Профиль</a>
+                                <a href="#"><i class="fas fa-history"></i> История</a>
+                                <div class="dropdown-divider"></div>
+                                <a href="{% url 'admin:logout' %}" class="logout-link">
+                                    <i class="fas fa-sign-out-alt"></i> Выйти
+                                </a>
+                            </div>
+                        </li>
+                        {% else %}
+                        <li><a href="{% url 'admin:login' %}" class="nav-link login-btn">
+                            <i class="fas fa-sign-in-alt"></i> Войти
+                        </a></li>
+                        {% endif %}
+                    </ul>
+                </nav>
+
+                <!-- Мобильное меню -->
+                <button class="mobile-menu-btn">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Сообщения -->
+    {% if messages %}
+    <div class="messages-container">
+        <div class="container">
             {% for message in messages %}
-                <div class="messages {{ message.tags }}">{{ message }}</div>
+            <div class="alert alert-{{ message.tags }}">
+                <div class="alert-content">
+                    {% if message.tags == 'success' %}
+                    <i class="fas fa-check-circle"></i>
+                    {% elif message.tags == 'error' %}
+                    <i class="fas fa-exclamation-circle"></i>
+                    {% elif message.tags == 'warning' %}
+                    <i class="fas fa-exclamation-triangle"></i>
+                    {% else %}
+                    <i class="fas fa-info-circle"></i>
+                    {% endif %}
+                    <span>{{ message }}</span>
+                </div>
+                <button class="alert-close">&times;</button>
+            </div>
             {% endfor %}
-        {% endif %}
-        
-        {% block content %}
-        {% endblock %}
+        </div>
     </div>
+    {% endif %}
+
+    <!-- Основной контент -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Подвал -->
+    <footer class="main-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <!-- Колонка 1: О центре -->
+                <div class="footer-col">
+                    <div class="footer-logo">
+                        <i class="fas fa-heartbeat"></i>
+                        <div>
+                            <h3>Медицинский центр</h3>
+                            <p class="logo-subtitle">«Здоровье»</p>
+                        </div>
+                    </div>
+                    <p class="footer-about">
+                        Современный медицинский центр с передовым оборудованием 
+                        и квалифицированными специалистами.
+                    </p>
+                    <div class="footer-social">
+                        <a href="#"><i class="fab fa-vk"></i></a>
+                        <a href="#"><i class="fab fa-telegram"></i></a>
+                        <a href="#"><i class="fab fa-whatsapp"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+
+                <!-- Колонка 2: Быстрые ссылки -->
+                <div class="footer-col">
+                    <h4>Быстрые ссылки</h4>
+                    <ul class="footer-links">
+                        <li><a href="{% url 'home' %}"><i class="fas fa-chevron-right"></i> Главная</a></li>
+                        <li><a href="{% url 'doctor_list' %}"><i class="fas fa-chevron-right"></i> Наши врачи</a></li>
+                        <li><a href="{% url 'service_list' %}"><i class="fas fa-chevron-right"></i> Услуги и цены</a></li>
+                        <li><a href="{% url 'appointment_create' %}"><i class="fas fa-chevron-right"></i> Запись онлайн</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Контакты</a></li>
+                    </ul>
+                </div>
+
+                <!-- Колонка 3: Услуги -->
+                <div class="footer-col">
+                    <h4>Основные услуги</h4>
+                    <ul class="footer-services">
+                        <li><i class="fas fa-check"></i> Консультации врачей</li>
+                        <li><i class="fas fa-check"></i> Диагностика</li>
+                        <li><i class="fas fa-check"></i> Анализы</li>
+                        <li><i class="fas fa-check"></i> УЗИ</li>
+                        <li><i class="fas fa-check"></i> Физиотерапия</li>
+                    </ul>
+                </div>
+
+                <!-- Колонка 4: Контакты -->
+                <div class="footer-col">
+                    <h4>Контакты</h4>
+                    <div class="footer-contacts">
+                        <p><i class="fas fa-map-marker-alt"></i> г. Москва, ул. Медицинская, д. 15</p>
+                        <p><i class="fas fa-phone"></i> +7 (495) 123-45-67</p>
+                        <p><i class="fas fa-envelope"></i> info@medical-center.ru</p>
+                        <p><i class="fas fa-clock"></i> Пн-Пт: 8:00-20:00<br>Сб-Вс: 9:00-18:00</p>
+                    </div>
+                    <a href="#map" class="btn btn-outline-light">
+                        <i class="fas fa-map"></i> Смотреть на карте
+                    </a>
+                </div>
+            </div>
+
+            <!-- Нижняя часть подвала -->
+            <div class="footer-bottom">
+                <p>&copy; 2023 Медицинский центр «Здоровье». Все права защищены.</p>
+                <div class="footer-legal">
+                    <a href="#">Политика конфиденциальности</a>
+                    <a href="#">Пользовательское соглашение</a>
+                    <a href="#">Лицензии</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Кнопка "Наверх" -->
+    <button class="scroll-to-top">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
+    <!-- Мобильное меню overlay -->
+    <div class="mobile-overlay"></div>
+
+    <!-- Скрипты -->
+    <script src="{% static 'js/main.js' %}"></script>
+    {% block extra_js %}{% endblock %}
 </body>
 </html>

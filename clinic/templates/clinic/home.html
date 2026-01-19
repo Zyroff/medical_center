@@ -1,86 +1,121 @@
 {% extends 'clinic/base.html' %}
+{% load static %}
 
-{% block title %}Главная - Медицинский центр{% endblock %}
+{% block title %}Главная - Медицинский центр «Здоровье»{% endblock %}
 
 {% block content %}
 <!-- Герой-секция -->
-<section class="hero">
+<section class="hero-section">
     <div class="container">
         <div class="hero-content">
-            <h1>Добро пожаловать в медицинский центр!</h1>
-            <p class="hero-text">Мы предлагаем качественные медицинские услуги и заботу о вашем здоровье.</p>
+            <h1 class="hero-title">Добро пожаловать в медицинский центр «Здоровье»</h1>
+            <p class="hero-subtitle">Мы предлагаем качественные медицинские услуги и заботу о вашем здоровье. Современное оборудование, опытные врачи и индивидуальный подход к каждому пациенту.</p>
+            <div class="hero-actions">
+                <a href="{% url 'appointment_create' %}" class="btn btn-primary">
+                    <i class="fas fa-calendar-plus"></i> Записаться на прием
+                </a>
+                <a href="{% url 'doctor_list' %}" class="btn btn-secondary">
+                    <i class="fas fa-user-md"></i> Наши врачи
+                </a>
+                <a href="tel:+74951234567" class="btn btn-outline">
+                    <i class="fas fa-phone"></i> Позвонить нам
+                </a>
+            </div>
         </div>
     </div>
 </section>
 
-<!-- Секция с таблицей (как на макете) -->
-<section class="table-section">
+<!-- Преимущества -->
+<section class="features-section">
     <div class="container">
-        <div class="features-table">
-            <!-- Заголовок таблицы -->
-            <div class="table-header">
-                <div class="table-cell">
-                    <h3><i class="fas fa-user-md"></i> Наши врачи</h3>
+        <div class="section-title">
+            <h2>Почему выбирают нас</h2>
+            <p>Мы создали все условия для вашего комфортного лечения и быстрого выздоровления</p>
+        </div>
+        
+        <div class="features-grid">
+            <div class="feature-card fade-in">
+                <div class="feature-icon">
+                    <i class="fas fa-user-md"></i>
                 </div>
-                <div class="table-cell">
-                    <h3><i class="fas fa-stethoscope"></i> Услуги</h3>
-                </div>
-                <div class="table-cell">
-                    <h3><i class="fas fa-calendar-plus"></i> Запись на прием</h3>
-                </div>
+                <h3>Опытные врачи</h3>
+                <p>В нашем центре работают квалифицированные специалисты с многолетним опытом и регулярным повышением квалификации.</p>
+                <a href="{% url 'doctor_list' %}" class="btn btn-outline">
+                    Посмотреть врачей <i class="fas fa-arrow-right"></i>
+                </a>
             </div>
             
-            <!-- Содержимое таблицы -->
-            <div class="table-content">
-                <div class="table-cell">
-                    <p>Профессиональные специалисты с многолетним опытом</p>
-                    <a href="{% url 'doctor_list' %}" class="table-btn">
-                        Посмотреть всех врачей <i class="fas fa-arrow-right"></i>
-                    </a>
+            <div class="feature-card fade-in delay-1">
+                <div class="feature-icon">
+                    <i class="fas fa-stethoscope"></i>
                 </div>
-                
-                <div class="table-cell">
-                    <p>Широкий спектр медицинских услуг</p>
-                    <a href="{% url 'service_list' %}" class="table-btn">
-                        Посмотреть услуги <i class="fas fa-arrow-right"></i>
-                    </a>
+                <h3>Современное оборудование</h3>
+                <p>Используем новейшее диагностическое и лечебное оборудование для точной диагностики и эффективного лечения.</p>
+                <a href="{% url 'service_list' %}" class="btn btn-outline">
+                    Наши услуги <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+            
+            <div class="feature-card fade-in delay-2">
+                <div class="feature-icon">
+                    <i class="fas fa-clock"></i>
                 </div>
-                
-                <div class="table-cell">
-                    <p>Запишитесь на прием онлайн</p>
-                    <a href="{% url 'appointment_create' %}" class="table-btn table-btn-primary">
-                        Записаться <i class="fas fa-arrow-right"></i>
-                    </a>
-                </div>
+                <h3>Удобное время работы</h3>
+                <p>Работаем без выходных, запись на удобное для вас время. Возможность онлайн-записи 24/7.</p>
+                <a href="{% url 'appointment_create' %}" class="btn btn-outline">
+                    Записаться онлайн <i class="fas fa-arrow-right"></i>
+                </a>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Дополнительная информация (можно убрать, если не нужно) -->
-<section class="info">
+<!-- Срочная запись -->
+<section class="cta-section" style="background: linear-gradient(135deg, #2c80ff, #6aa8ff); color: white; padding: 80px 0; border-radius: 20px; margin: 60px 0;">
     <div class="container">
-        <h2>Почему выбирают наш медицинский центр?</h2>
-        <div class="info-grid">
-            <div class="info-item">
-                <i class="fas fa-award"></i>
-                <h4>Высокое качество</h4>
-                <p>Современное оборудование и проверенные методики лечения</p>
+        <div style="text-align: center; max-width: 800px; margin: 0 auto;">
+            <h2 style="font-size: 2.5rem; margin-bottom: 20px;">Нужна срочная консультация?</h2>
+            <p style="font-size: 1.2rem; margin-bottom: 30px; opacity: 0.9;">
+                Запишитесь на прием онлайн прямо сейчас и получите консультацию в ближайшее время
+            </p>
+            <a href="{% url 'appointment_create' %}" class="btn" style="background: white; color: #2c80ff; padding: 15px 40px; font-size: 1.1rem;">
+                <i class="fas fa-calendar-check"></i> Записаться онлайн
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Контакты -->
+<section class="contacts-section" id="contacts">
+    <div class="container">
+        <div class="section-title">
+            <h2>Контакты</h2>
+            <p>Мы всегда рады помочь вам и ответить на все вопросы</p>
+        </div>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <h3>Адрес</h3>
+                <p>г. Москва, ул. Медицинская, д. 15<br>м. Медведково, 5 минут пешком</p>
             </div>
-            <div class="info-item">
-                <i class="fas fa-clock"></i>
-                <h4>Удобное время</h4>
-                <p>Работаем без выходных, запись на удобное для вас время</p>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-phone"></i>
+                </div>
+                <h3>Телефон</h3>
+                <p>+7 (495) 123-45-67<br>Круглосуточная линия: +7 (900) 123-45-67</p>
             </div>
-            <div class="info-item">
-                <i class="fas fa-map-marker-alt"></i>
-                <h4>Удобное расположение</h4>
-                <p>Наш центр находится в центре города с парковкой</p>
-            </div>
-            <div class="info-item">
-                <i class="fas fa-hand-holding-heart"></i>
-                <h4>Индивидуальный подход</h4>
-                <p>Персональное внимание к каждому пациенту</p>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-envelope"></i>
+                </div>
+                <h3>Email</h3>
+                <p>info@medical-center.ru<br>Для записей: appointment@medical-center.ru</p>
             </div>
         </div>
     </div>

@@ -50,13 +50,7 @@ class Doctor(models.Model):
     experience = models.IntegerField(verbose_name='Стаж (лет)', default=0)
     education = models.TextField(verbose_name='Образование', blank=True)
     
-    def __str__(self):
-        return f"Доктор {self.user.get_full_name()} - {self.specialization}"
-    
-    class Meta:
-        verbose_name = 'Врач'
-        verbose_name_plural = 'Врачи'
-
+    # Новые поля добавляем здесь, а не в конце
     description = models.TextField(verbose_name='О враче', blank=True)
     photo = models.ImageField(
         upload_to='doctors/', 
