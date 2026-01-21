@@ -315,3 +315,130 @@ main {
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(75, 108, 183, 0.3);
 }
+
+.doctor-actions {
+    display: flex;
+    gap: 12px; /* Расстояние между кнопками */
+    margin-top: 20px;
+    width: 100%;
+}
+
+.doctor-actions .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px; /* Расстояние между иконкой и текстом */
+    padding: 12px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 15px;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    flex: 1; /* Делаем кнопки одинаковой ширины */
+    text-align: center;
+    min-height: 44px; /* Минимальная высота для удобства нажатия */
+}
+
+/* Стиль для кнопки "Подробнее" */
+.doctor-actions .btn-outline {
+    border: 2px solid #4a6fa5;
+    color: #4a6fa5;
+    background: transparent;
+}
+
+.doctor-actions .btn-outline:hover {
+    background: #4a6fa5;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(74, 111, 165, 0.3);
+}
+
+/* Стиль для кнопки "Записаться" */
+.doctor-actions .btn-primary {
+    background: linear-gradient(135deg, #4a6fa5 0%, #3a5985 100%);
+    color: white;
+    border: none;
+    font-weight: 600;
+}
+
+.doctor-actions .btn-primary:hover {
+    background: linear-gradient(135deg, #3a5985 0%, #2a4765 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(58, 89, 133, 0.3);
+}
+
+/* Для мобильных устройств */
+@media (max-width: 768px) {
+    .doctor-actions {
+        flex-direction: column; /* Кнопки становятся друг под другом на мобильных */
+        gap: 10px;
+    }
+    
+    .doctor-actions .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+.service-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+    width: 100%;
+}
+
+.service-actions .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    flex: 1;
+    text-align: center;
+    min-height: 44px;
+    border: 2px solid transparent;
+}
+
+/* Кнопка "Записаться" */
+.service-actions .btn-primary {
+    background: linear-gradient(135deg, #28a745 0%, #218838 100%);
+    color: white;
+    font-weight: 600;
+}
+
+.service-actions .btn-primary:hover {
+    background: linear-gradient(135deg, #218838 0%, #1e7e34 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
+/* Кнопка "Подробнее" */
+.service-actions .btn-outline {
+    border: 2px solid #6c757d;
+    color: #6c757d;
+    background: transparent;
+}
+
+.service-actions .btn-outline:hover {
+    background: #6c757d;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .service-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .service-actions .btn {
+        width: 100%;
+    }
+}
