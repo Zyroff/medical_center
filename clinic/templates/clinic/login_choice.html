@@ -1,0 +1,78 @@
+{% extends 'clinic/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="text-center mb-0">
+                        <i class="fas fa-hospital"></i> Медицинский центр «Здоровье»
+                    </h3>
+                </div>
+                <div class="card-body text-center">
+                    <h4 class="mb-4">Как вы хотите войти?</h4>
+                    
+                    <div class="row">
+                        <!-- Для пациентов -->
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <i class="fas fa-user-injured fa-4x text-success mb-3"></i>
+                                    <h5 class="card-title">Пациент</h5>
+                                    <p class="card-text">Запись на прием, просмотр истории, управление профилем</p>
+                                    <a href="{% url 'custom_login' %}" class="btn btn-success btn-lg">
+                                        <i class="fas fa-sign-in-alt"></i> Войти как пациент
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Для врачей -->
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <i class="fas fa-user-md fa-4x text-info mb-3"></i>
+                                    <h5 class="card-title">Врач/Сотрудник</h5>
+                                    <p class="card-text">Просмотр расписания, управление записями, работа с пациентами</p>
+                                    <a href="{% url 'custom_login' %}?role=doctor" class="btn btn-info btn-lg">
+                                        <i class="fas fa-sign-in-alt"></i> Войти как врач
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Кнопка Telegram -->
+                    <div class="mt-4">
+                        <a href="#" class="btn btn-outline-primary btn-lg" onclick="openTelegramAuth()">
+                            <i class="fab fa-telegram"></i> Быстрый вход через Telegram
+                        </a>
+                    </div>
+                    
+                    <!-- Для администраторов (только видно админам) -->
+                    {% if request.user.is_superuser %}
+                    <hr class="my-4">
+                    <div class="alert alert-warning">
+                        <h5><i class="fas fa-cog"></i> Администратор</h5>
+                        <p>Для доступа к полной админ-панели Django:</p>
+                        <a href="/django-admin/" class="btn btn-warning">
+                            <i class="fas fa-lock"></i> Открыть админ-панель Django
+                        </a>
+                    </div>
+                    {% endif %}
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function openTelegramAuth() {
+    // Функция для Telegram авторизации
+    alert('Функция входа через Telegram будет доступна после настройки бота');
+    // window.open('https://t.me/your_bot?start=login', '_blank');
+}
+</script>
+{% endblock %}

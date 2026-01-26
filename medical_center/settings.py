@@ -48,6 +48,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # 'clinic.middleware.AdminRedirectMiddleware',
 ]
 
 ROOT_URLCONF = 'medical_center.urls'
@@ -128,3 +129,11 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 TELEGRAM_BOT_TOKEN = '8388905146:AAGVCAUlUOMyl_4Flqt_5MtUnA-4IVc7TWI'
+
+SITE_URL = "http://127.0.0.1:8000"  # Заменить на домен
+DOCTOR_CODES = ["MED2024", "HEALTH123"]  # Временные коды доступа
+
+AUTH_USER_MODEL = 'clinic.User'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
