@@ -1,3 +1,6 @@
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+from .forms import PatientRegistrationForm
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -24,15 +27,15 @@ logger = logging.getLogger(__name__)
 
 def home(request):
     """Главная страница"""
-    # Если пользователь не авторизован - показываем выбор входа
-    if not request.user.is_authenticated:
-        return render(request, 'clinic/login_choice.html')
+    # Если пользователь авторизован - редирект в личный кабинет
+    if request.user.is_authenticated:
+        if request.user.role == User.DOCTOR or request.user.role == User.ADMIN:
+            return redirect('doctor_dashboard')
+        else:
+            return redirect('patient_profile')
     
-    # Если авторизован - показываем соответствующую страницу
-    if request.user.role == User.DOCTOR or request.user.role == User.ADMIN:
-        return redirect('doctor_dashboard')
-    else:
-        return redirect('patient_profile')
+    # Если не авторизован - показываем обычную главную страницу
+    return render(request, 'clinic/home.html')
 
 
 # ========== АВТОРИЗАЦИЯ ==========
@@ -219,6 +222,13 @@ class AppointmentCreateView(LoginRequiredMixin, CreateView):
             messages.error(self.request, 'Профиль пациента не найден.')
             return redirect('patient_profile')
 
+@method_decorator(login_required(login_url='/login/'), name='dispatch')
+class AppointmentCreateView(CreateView):
+    """Создание новой записи на прием"""
+    model = Appointment
+    form_class = AppointmentForm
+    template_name = 'clinic/appointment_create.html'
+    success_url = reverse_lazy('appointment_list')
 
 class AppointmentListView(LoginRequiredMixin, ListView):
     """Список записей текущего пациента"""
@@ -330,29 +340,9 @@ def telegram_webhook(request):
             data = json.loads(request.body)
             logger.info(f"Telegram webhook data: {data}")
             
-            # Обработка callback от кнопок
-            if 'callback_query' in data:
-                callback_data = data['callback_query']
-                chat_id = callback_data['from']['id']
-                callback_data_text = callback_data['data']
-                
-                # Обработка действий
-                if callback_data_text.startswith('confirm_'):
-                    appointment_id = callback_data_text.split('_')[1]
-                    return handle_appointment_confirmation(appointment_id, chat_id)
-                elif callback_data_text.startswith('reschedule_'):
-                    appointment_id = callback_data_text.split('_')[1]
-                    return handle_appointment_reschedule(appointment_id, chat_id)
-            
-            # Обработка текстовых сообщений
-            elif 'message' in data:
-                message = data['message']
-                chat_id = message['chat']['id']
-                text = message.get('text', '')
-                
-                # Обработка команды /start
-                if text.startswith('/start'):
-                    return handle_telegram_start_command(chat_id, text)
+            # Передаем данные в обработчик из telegram_service.py
+            from .services.telegram_service import handle_telegram_update
+            handle_telegram_update(data)
             
             return JsonResponse({'status': 'ok'})
             
@@ -511,3 +501,21 @@ def contacts(request):
 def privacy_policy(request):
     """Политика конфиденциальности"""
     return render(request, 'clinic/privacy_policy.html')
+
+def register_patient(request):
+    if request.method == 'POST':
+        form = PatientRegistrationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            # Автоматически создаем профиль пациента
+            Patient.objects.create(
+                user=user,
+                phone=form.cleaned_data['phone'],
+                birth_date=timezone.now().date()  # или добавить поле в форму
+            )
+            messages.success(request, 'Регистрация успешна! Теперь войдите в систему.')
+            return redirect('custom_login')
+    else:
+        form = PatientRegistrationForm()
+    
+    return render(request, 'clinic/register.html', {'form': form})

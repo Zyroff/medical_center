@@ -45,10 +45,9 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',  # Этот обязателен!
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # 'clinic.middleware.AdminRedirectMiddleware',
 ]
 
 ROOT_URLCONF = 'medical_center.urls'
@@ -128,12 +127,21 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-TELEGRAM_BOT_TOKEN = '8388905146:AAGVCAUlUOMyl_4Flqt_5MtUnA-4IVc7TWI'
+TELEGRAM_BOT_TOKEN = "8565788967:AAEC04r37NEfM4v1c12-3oHF2lJb5dgU_CM8"
 
-SITE_URL = "http://127.0.0.1:8000"  # Заменить на домен
-DOCTOR_CODES = ["MED2024", "HEALTH123"]  # Временные коды доступа
+# URL вашего сайта (для генерации ссылок авторизации)
+SITE_URL = "http://127.0.0.1:8000"  # для разработки
+# SITE_URL = "https://ваш-домен.ru"  # для продакшена
+
+# Коды доступа для врачей (опционально)
+DOCTOR_CODES = ["MED2024", "DOC123", "ACCESS456"]
 
 AUTH_USER_MODEL = 'clinic.User'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+LOGIN_URL = '/login/'  # Путь к вашей странице входа
+LOGIN_REDIRECT_URL = '/'  # Куда перенаправлять после входа
+LOGOUT_REDIRECT_URL = '/'  # Куда перенаправлять после выхода
+

@@ -220,12 +220,21 @@ class Service(models.Model):
     duration = models.IntegerField(verbose_name='Длительность (мин)', default=30)
     price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Цена')
     
+    # ДОБАВЬТЕ ЭТУ СТРОКУ - связь многие-ко-многим с врачами
+    doctors = models.ManyToManyField(
+        'Doctor', 
+        related_name='services', 
+        blank=True,
+        verbose_name='Врачи, оказывающие услугу'
+    )
+    
     def __str__(self):
         return self.name
     
     class Meta:
         verbose_name = 'Услуга'
         verbose_name_plural = 'Услуги'
+
 
 
 class Appointment(models.Model):

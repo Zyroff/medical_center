@@ -73,27 +73,34 @@
                         </a></li>
                         
                         {% if user.is_authenticated %}
-                        <li><a href="{% url 'appointment_list' %}" class="nav-link {% if request.resolver_match.url_name == 'appointment_list' %}active{% endif %}">
-                            <i class="fas fa-calendar-alt"></i> Мои записи
-                        </a></li>
-                        <li class="nav-dropdown">
-                            <a href="#" class="nav-link user-profile">
-                                <i class="fas fa-user-circle"></i> {{ user.username }}
-                                <i class="fas fa-chevron-down"></i>
-                            </a>
-                            <div class="dropdown-menu">
-                                <a href="{% url 'patient_profile' %}"><i class="fas fa-user"></i> Профиль</a>
-                                <a href="#"><i class="fas fa-history"></i> История</a>
-                                <div class="dropdown-divider"></div>
-                                <a href="{% url 'admin:logout' %}" class="logout-link">
-                                    <i class="fas fa-sign-out-alt"></i> Выйти
+                            <li><a href="{% url 'appointment_list' %}" class="nav-link {% if request.resolver_match.url_name == 'appointment_list' %}active{% endif %}">
+                                <i class="fas fa-calendar-alt"></i> Мои записи
+                            </a></li>
+                            <li class="nav-dropdown">
+                                <a href="#" class="nav-link user-profile">
+                                    <i class="fas fa-user-circle"></i> {{ user.username }}
+                                    <i class="fas fa-chevron-down"></i>
                                 </a>
-                            </div>
-                        </li>
+                                <div class="dropdown-menu">
+                                    <a href="{% url 'patient_profile' %}">
+                                        <i class="fas fa-user"></i> Профиль
+                                    </a>
+                                    <a href="#">
+                                        <i class="fas fa-history"></i> История
+                                    </a>
+                                    <div class="dropdown-divider"></div>
+                                    <a href="{% url 'custom_logout' %}" class="logout-link">
+                                        <i class="fas fa-sign-out-alt"></i> Выйти
+                                    </a>
+                                </div>
+                            </li>
                         {% else %}
-                        <li><a href="{% url 'admin:login' %}" class="nav-link login-btn">
-                            <i class="fas fa-sign-in-alt"></i> Войти
-                        </a></li>
+                            <li><a href="{% url 'register' %}" class="nav-link register-btn">
+                                <i class="fas fa-user-plus"></i> Регистрация
+                            </a></li>
+                            <li><a href="{% url 'custom_login' %}" class="nav-link login-btn">
+                                <i class="fas fa-sign-in-alt"></i> Войти
+                            </a></li>
                         {% endif %}
                     </ul>
                 </nav>
@@ -223,5 +230,6 @@
     <!-- Скрипты -->
     <script src="{% static 'js/main.js' %}"></script>
     {% block extra_js %}{% endblock %}
+
 </body>
 </html>

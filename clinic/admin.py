@@ -1,32 +1,59 @@
 from django.contrib import admin
-from .models import Patient, Doctor, Service, Appointment, MedicalRecord
+from django.contrib.auth.admin import UserAdmin
+from .models import (
+    User, Doctor, Patient, Service, 
+    Appointment, MedicalRecord, 
+    TelegramAuthToken, DoctorAccessCode
+)
 
-@admin.register(Patient)
-class PatientAdmin(admin.ModelAdmin):
-    list_display = ['user', 'phone', 'birth_date', 'telegram_id']  # ← добавил telegram_id
-    search_fields = ['user__first_name', 'user__last_name', 'phone', 'telegram_id']
+# Регистрируем кастомную модель User
+@admin.register(User)
+class CustomUserAdmin(UserAdmin):
+    list_display = ('username', 'email', 'first_name', 'last_name', 'role', 'is_staff')
+    list_filter = ('role', 'is_staff', 'is_superuser')
+    fieldsets = UserAdmin.fieldsets + (
+        ('Дополнительная информация', {
+            'fields': ('role', 'phone', 'telegram_id', 'login_method', 'doctor_profile')
+        }),
+    )
+    add_fieldsets = UserAdmin.add_fieldsets + (
+        ('Дополнительная информация', {
+            'fields': ('role', 'phone', 'telegram_id', 'login_method')
+        }),
+    )
 
+# Регистрируем остальные модели
 @admin.register(Doctor)
 class DoctorAdmin(admin.ModelAdmin):
-    list_display = ['user', 'specialization', 'room', 'experience']
-    list_filter = ['specialization']
-    search_fields = ['user__first_name', 'user__last_name']
+    list_display = ('full_name', 'specialization', 'room', 'is_active')
+    list_filter = ('specialization', 'is_active')
+    search_fields = ('user__first_name', 'user__last_name', 'specialization')
+    
+@admin.register(Patient)
+class PatientAdmin(admin.ModelAdmin):
+    list_display = ('user', 'phone', 'birth_date')
+    search_fields = ('user__first_name', 'user__last_name', 'phone')
 
 @admin.register(Service)
 class ServiceAdmin(admin.ModelAdmin):
-    list_display = ['name', 'duration', 'price']
-    search_fields = ['name']
+    list_display = ('name', 'duration', 'price')
+    list_filter = ('price',)
 
 @admin.register(Appointment)
 class AppointmentAdmin(admin.ModelAdmin):
-    list_display = ['patient', 'doctor', 'service', 'date_time', 'status']
-    list_filter = ['status', 'date_time', 'doctor__specialization']
-    date_hierarchy = 'date_time'
-    search_fields = ['patient__user__first_name', 'patient__user__last_name']
+    list_display = ('patient', 'doctor', 'service', 'date_time', 'status')
+    list_filter = ('status', 'date_time')
+    search_fields = ('patient__user__first_name', 'doctor__user__first_name')
 
 @admin.register(MedicalRecord)
 class MedicalRecordAdmin(admin.ModelAdmin):
-    list_display = ['patient', 'doctor', 'created_at']
-    list_filter = ['created_at']
-    search_fields = ['patient__user__first_name', 'patient__user__last_name']
+    list_display = ('patient', 'doctor', 'created_at')
+    
+@admin.register(TelegramAuthToken)
+class TelegramAuthTokenAdmin(admin.ModelAdmin):
+    list_display = ('token', 'telegram_id', 'role', 'is_used', 'expires_at')
+    list_filter = ('is_used', 'role')
 
+@admin.register(DoctorAccessCode)
+class DoctorAccessCodeAdmin(admin.ModelAdmin):
+    list_display = ('code', 'created_by', 'is_used', 'expires_at')
