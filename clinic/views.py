@@ -23,28 +23,23 @@ from .services.telegram_service import telegram_service
 logger = logging.getLogger(__name__)
 
 
-# ========== ОСНОВНЫЕ СТРАНИЦЫ ==========
 
 def home(request):
     """Главная страница"""
-    # Если пользователь авторизован - редирект в личный кабинет
     if request.user.is_authenticated:
         if request.user.role == User.DOCTOR or request.user.role == User.ADMIN:
             return redirect('doctor_dashboard')
         else:
             return redirect('patient_profile')
     
-    # Если не авторизован - показываем обычную главную страницу
     return render(request, 'clinic/home.html')
 
 
-# ========== АВТОРИЗАЦИЯ ==========
 
 class CustomLoginView(View):
     """Кастомная страница входа для клиентов и работников"""
     
     def get(self, request):
-        # Если пользователь уже авторизован - редирект
         if request.user.is_authenticated:
             if request.user.role == User.DOCTOR or request.user.role == User.ADMIN:
                 return redirect('doctor_dashboard')
@@ -65,7 +60,6 @@ class CustomLoginView(View):
                 login(request, user)
                 messages.success(request, f'Добро пожаловать, {user.username}!')
                 
-                # Редирект в зависимости от роли
                 if user.role == User.DOCTOR or user.role == User.ADMIN:
                     return redirect('doctor_dashboard')
                 else:
@@ -80,19 +74,14 @@ class CustomLoginView(View):
 
 def custom_logout(request):
     """Выход из системы с полной очисткой сессии"""
-    # Очищаем все данные сессии
     request.session.flush()
     
-    # Выход из системы
     logout(request)
     
-    # Добавляем сообщение
     messages.success(request, 'Вы успешно вышли из системы.')
     
-    # Редирект на главную страницу с принудительным обновлением
     response = redirect('home')
     
-    # Добавляем заголовки для предотвращения кеширования
     response['Cache-Control'] = 'no-cache, no-store, must-revalidate'
     response['Pragma'] = 'no-cache'
     response['Expires'] = '0'
@@ -114,7 +103,6 @@ def telegram_auth(request):
             expires_at__gt=timezone.now()
         )
         
-        # Создаем/находим пользователя
         user, created = User.objects.get_or_create(
             telegram_id=auth_token.telegram_id,
             defaults={
@@ -124,19 +112,16 @@ def telegram_auth(request):
             }
         )
         
-        # Если пользователь уже есть, но роль изменилась
         if not created and user.role != auth_token.role:
             user.role = auth_token.role
             user.save()
         
-        # Логиним пользователя
         login(request, user)
         auth_token.is_used = True
         auth_token.save()
         
         messages.success(request, f'Добро пожаловать, {user.username}!')
         
-        # Редирект по роли
         if user.role == User.DOCTOR or user.role == User.ADMIN:
             return redirect('doctor_dashboard')
         return redirect('patient_profile')
@@ -157,7 +142,6 @@ def access_denied(request):
     return render(request, 'clinic/access_denied.html')
 
 
-# ========== ВРАЧИ И УСЛУГИ ==========
 
 class DoctorListView(ListView):
     """Список всех врачей"""
@@ -182,7 +166,6 @@ class ServiceListView(ListView):
     queryset = Service.objects.all().order_by('name')
 
 
-# ========== ЗАПИСИ НА ПРИЕМ ==========
 
 class AppointmentCreateView(LoginRequiredMixin, CreateView):
     """Создание новой записи на прием"""
@@ -198,20 +181,17 @@ class AppointmentCreateView(LoginRequiredMixin, CreateView):
         return kwargs
     
     def form_valid(self, form):
-        # Автоматически привязываем запись к текущему пациенту
         try:
             patient = Patient.objects.get(user=self.request.user)
             form.instance.patient = patient
             form.instance.status = 'pending'
             
-            # Проверяем доступность времени
             if not form.instance.is_time_available():
                 messages.error(self.request, 'Врач занят в это время. Выберите другое время.')
                 return self.form_invalid(form)
             
             response = super().form_valid(form)
             
-            # Отправляем уведомление в Telegram
             if patient.telegram_id:
                 patient.send_telegram_reminder(form.instance)
             
@@ -246,22 +226,19 @@ class AppointmentListView(LoginRequiredMixin, ListView):
             return Appointment.objects.none()
 
 
-# ========== ЛИЧНЫЕ КАБИНЕТЫ ==========
 
 @login_required
 def patient_profile(request):
     """Профиль пациента - ТОЛЬКО для пациентов"""
-    # Проверяем, что пользователь действительно пациент
     if request.user.role != User.CLIENT:
         messages.warning(request, 'Эта страница только для пациентов')
         
-        # Редирект в зависимости от роли
         if request.user.is_superuser:
-            return redirect('/admin/')  # Админа в админку
+            return redirect('/admin/')
         elif request.user.role == User.DOCTOR:
-            return redirect('doctor_dashboard')  # Врача в его панель
+            return redirect('doctor_dashboard')
         else:
-            return redirect('home')  # Остальных на главную
+            return redirect('home')
     
     try:
         patient = Patient.objects.get(user=request.user)
@@ -276,7 +253,6 @@ def patient_profile(request):
         })
         
     except Patient.DoesNotExist:
-        # Создаем профиль пациента если его нет
         patient = Patient.objects.create(
             user=request.user,
             phone=request.user.phone or '',
@@ -294,7 +270,6 @@ def doctor_dashboard(request):
     try:
         doctor = Doctor.objects.get(user=request.user)
         
-        # Статистика для врача
         today = timezone.now().date()
         appointments_today = Appointment.objects.filter(
             doctor=doctor,
@@ -316,7 +291,6 @@ def doctor_dashboard(request):
         })
         
     except Doctor.DoesNotExist:
-        # Если врач не найден, но у пользователя роль врача
         if request.user.role == User.DOCTOR:
             doctor = Doctor.objects.create(
                 user=request.user,
@@ -330,7 +304,6 @@ def doctor_dashboard(request):
         return redirect('access_denied')
 
 
-# ========== TELEGRAM WEBHOOK ==========
 
 @csrf_exempt
 def telegram_webhook(request):
@@ -340,7 +313,6 @@ def telegram_webhook(request):
             data = json.loads(request.body)
             logger.info(f"Telegram webhook data: {data}")
             
-            # Передаем данные в обработчик из telegram_service.py
             from .services.telegram_service import handle_telegram_update
             handle_telegram_update(data)
             
@@ -356,11 +328,9 @@ def telegram_webhook(request):
 def handle_telegram_start_command(chat_id, text):
     """Обработка команды /start в Telegram"""
     try:
-        # Проверяем, есть ли пользователь в БД
         try:
             user = User.objects.get(telegram_id=str(chat_id))
             
-            # Если пользователь уже есть
             telegram_service.send_message(
                 chat_id,
                 f"👋 С возвращением, {user.username}!\n"
@@ -370,7 +340,6 @@ def handle_telegram_start_command(chat_id, text):
             return JsonResponse({'status': 'welcome_back'})
             
         except User.DoesNotExist:
-            # Новый пользователь - отправляем выбор роли
             buttons = [
                 [{"text": "👤 Я пациент", "callback_data": "role_client"}],
                 [{"text": "👨‍⚕️ Я врач/сотрудник", "callback_data": "role_staff"}]
@@ -400,7 +369,6 @@ def handle_appointment_confirmation(appointment_id, chat_id):
     try:
         appointment = Appointment.objects.get(id=appointment_id)
         
-        # Проверяем, что пациент подтверждает свою запись
         if str(appointment.patient.telegram_id) != str(chat_id):
             telegram_service.send_message(
                 chat_id, 
@@ -432,15 +400,12 @@ def handle_appointment_reschedule(appointment_id, chat_id):
     return JsonResponse({'status': 'reschedule_requested'})
 
 
-# ========== ТЕСТОВЫЕ ФУНКЦИИ ==========
 
 def test_telegram(request):
     """Тестовая функция для проверки Telegram бота"""
     try:
-        # Получите ваш реальный Chat ID
-        test_chat_id = "1431152303"  # ← ЗАМЕНИТЕ НА ВАШ РЕАЛЬНЫЙ CHAT ID!
+        test_chat_id = "1431152303"
         
-        # Отправляем тестовое сообщение
         success = telegram_service.send_message(
             test_chat_id, 
             "✅ Тестовое сообщение от медицинского центра!\n\n"
@@ -468,10 +433,8 @@ def test_telegram(request):
 def set_telegram_webhook(request):
     """Установка вебхука для Telegram бота"""
     try:
-        # URL вашего вебхука
         webhook_url = "https://ваш-домен.ру/telegram-webhook/"
         
-        # Устанавливаем вебхук
         telegram_service.set_webhook(webhook_url)
         
         return JsonResponse({
@@ -486,7 +449,6 @@ def set_telegram_webhook(request):
         })
 
 
-# ========== ДОПОЛНИТЕЛЬНЫЕ СТРАНИЦЫ ==========
 
 def about(request):
     """Страница "О клинике" """
@@ -507,11 +469,10 @@ def register_patient(request):
         form = PatientRegistrationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            # Автоматически создаем профиль пациента
             Patient.objects.create(
                 user=user,
                 phone=form.cleaned_data['phone'],
-                birth_date=timezone.now().date()  # или добавить поле в форму
+                birth_date=timezone.now().date()
             )
             messages.success(request, 'Регистрация успешна! Теперь войдите в систему.')
             return redirect('custom_login')

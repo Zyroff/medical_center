@@ -14,7 +14,6 @@
     --transition: all 0.3s ease;
 }
 
-/* Общие стили */
 body {
     font-family: 'Open Sans', sans-serif;
     color: var(--dark-color);
@@ -24,7 +23,6 @@ body {
     flex-direction: column;
 }
 
-/* Верхняя панель */
 .top-bar {
     background: var(--dark-color);
     color: white;
@@ -65,7 +63,6 @@ body {
     transform: translateY(-2px);
 }
 
-/* Основная шапка */
 .main-header {
     background: white;
     box-shadow: var(--shadow-md);
@@ -82,7 +79,6 @@ body {
     padding: 15px 0;
 }
 
-/* Логотип */
 .logo {
     display: flex;
     align-items: center;
@@ -125,7 +121,6 @@ body {
     font-weight: 500;
 }
 
-/* Основная навигация */
 .main-nav {
     flex: 1;
     display: flex;
@@ -174,7 +169,6 @@ body {
     border-radius: 2px;
 }
 
-/* Выпадающее меню пользователя */
 .nav-dropdown {
     position: relative;
 }
@@ -231,7 +225,6 @@ body {
     color: var(--accent-color) !important;
 }
 
-/* Кнопка входа */
 .login-btn {
     background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
     color: white !important;
@@ -243,7 +236,6 @@ body {
     transform: translateY(-2px);
 }
 
-/* Сообщения */
 .alert {
     padding: 15px 20px;
     border-radius: 8px;
@@ -279,7 +271,6 @@ body {
     gap: 12px;
 }
 
-/* Подвал */
 .main-footer {
     background: linear-gradient(135deg, var(--dark-color), #1a202c);
     color: white;
@@ -421,7 +412,6 @@ body {
     color: var(--primary-light);
 }
 
-/* Кнопка "Наверх" */
 .scroll-to-top {
     position: fixed;
     bottom: 30px;
@@ -454,7 +444,6 @@ body {
     background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
 }
 
-/* Мобильное меню */
 .mobile-menu-btn {
     display: none;
     background: none;
@@ -475,7 +464,6 @@ body {
     z-index: 999;
 }
 
-/* Анимации */
 @keyframes slideDown {
     from {
         opacity: 0;
@@ -498,7 +486,6 @@ body {
     }
 }
 
-/* Адаптивность */
 @media (max-width: 1200px) {
     .main-nav {
         display: none;

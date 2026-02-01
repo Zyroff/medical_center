@@ -6,7 +6,6 @@
 
 {% block extra_css %}
 <style>
-    /* Герой-секция для услуг */
     .services-hero {
         background: linear-gradient(135deg, rgba(91, 228, 155, 0.9), rgba(30, 130, 76, 0.95));
         color: white;
@@ -28,7 +27,6 @@
         opacity: 0.9;
     }
     
-    /* Категории услуг */
     .categories-section {
         max-width: 1200px;
         margin: 0 auto 40px;
@@ -77,7 +75,6 @@
         font-size: 1.8rem;
     }
     
-    /* Поиск и фильтры */
     .filters-section {
         max-width: 1200px;
         margin: 0 auto 40px;
@@ -128,7 +125,6 @@
         width: 120px;
     }
     
-    /* Сетка услуг - ПОЛНОСТЬЮ ПЕРЕПИСАНА */
     .services-grid {
         display: grid !important;
         grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)) !important;
@@ -314,7 +310,6 @@
         transform: translateY(-2px) !important;
     }
     
-    /* Баннер акции */
     .promo-banner {
         max-width: 1200px;
         margin: 60px auto;
@@ -352,7 +347,6 @@
         display: inline-block;
     }
     
-    /* Адаптивность */
     @media (max-width: 768px) {
         .services-hero {
             padding: 60px 20px;
@@ -396,7 +390,6 @@
 {% endblock %}
 
 {% block content %}
-<!-- Герой-секция -->
 <section class="services-hero">
     <div class="container">
         <h1>Услуги и цены</h1>
@@ -404,7 +397,6 @@
     </div>
 </section>
 
-<!-- Категории услуг -->
 <div class="categories-section">
     <h2 class="categories-title">Категории услуг</h2>
     <div class="categories-grid">
@@ -435,7 +427,6 @@
     </div>
 </div>
 
-<!-- Поиск и фильтры -->
 <div class="filters-section">
     <div class="search-box">
         <i class="fas fa-search"></i>
@@ -452,9 +443,7 @@
     </div>
 </div>
 
-<!-- Сетка услуг -->
 <div class="services-grid" id="services-container">
-    <!-- Услуга 1 -->
     <div class="service-card" data-category="consultation" data-price="1500">
         <div class="service-header">
             <img src="{% static 'images/services/therapist.jpg' %}" alt="Консультация терапевта" class="service-image">
@@ -482,7 +471,6 @@
         </div>
     </div>
     
-    <!-- Услуга 2 -->
     <div class="service-card popular" data-category="consultation" data-price="2000">
         <div class="service-header">
             <img src="{% static 'images/services/cardiologist.jpg' %}" alt="Консультация кардиолога" class="service-image">
@@ -510,7 +498,6 @@
         </div>
     </div>
     
-    <!-- Услуга 3 -->
     <div class="service-card" data-category="ultrasound" data-price="2500">
         <div class="service-header">
             <img src="{% static 'images/services/ultrasound.jpg' %}" alt="УЗИ брюшной полости" class="service-image">
@@ -538,7 +525,6 @@
         </div>
     </div>
     
-    <!-- Услуга 4 -->
     <div class="service-card" data-category="diagnostics" data-price="1200">
         <div class="service-header">
             <img src="{% static 'images/services/ecg.jpg' %}" alt="ЭКГ" class="service-image">
@@ -566,7 +552,6 @@
         </div>
     </div>
     
-    <!-- Услуга 5 -->
     <div class="service-card" data-category="analysis" data-price="800">
         <div class="service-header">
             <div class="service-image" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 4rem;">
@@ -596,7 +581,6 @@
         </div>
     </div>
     
-    <!-- Услуга 6 -->
     <div class="service-card" data-category="therapy" data-price="1800">
         <div class="service-header">
             <div class="service-image" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 4rem;">
@@ -627,7 +611,6 @@
     </div>
 </div>
 
-<!-- Баннер акции -->
 <div class="promo-banner">
     <div class="promo-card">
         <div class="promo-content">
@@ -648,7 +631,6 @@
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Элементы DOM
     const categoryBtns = document.querySelectorAll('.category-btn');
     const serviceCards = document.querySelectorAll('.service-card');
     const searchInput = document.getElementById('service-search');
@@ -657,7 +639,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const applyPriceBtn = document.getElementById('apply-price');
     const resetPriceBtn = document.getElementById('reset-price');
     
-    // Фильтрация по категориям
     categoryBtns.forEach(btn => {
         btn.addEventListener('click', function() {
             categoryBtns.forEach(b => b.classList.remove('active'));
@@ -666,10 +647,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Поиск по названию
     searchInput.addEventListener('input', filterServices);
     
-    // Фильтр по цене
     applyPriceBtn.addEventListener('click', filterServices);
     resetPriceBtn.addEventListener('click', function() {
         minPriceInput.value = '';
@@ -677,16 +656,13 @@ document.addEventListener('DOMContentLoaded', function() {
         filterServices();
     });
     
-    // Кнопка "Подробнее"
     document.querySelectorAll('.btn-info').forEach(btn => {
         btn.addEventListener('click', function() {
             const serviceId = this.dataset.service;
-            // Здесь можно открыть модальное окно с детальной информацией
             alert(`Подробная информация об услуге #${serviceId}`);
         });
     });
     
-    // Основная функция фильтрации
     function filterServices() {
         const activeCategory = document.querySelector('.category-btn.active').dataset.category;
         const searchTerm = searchInput.value.toLowerCase();
@@ -701,21 +677,17 @@ document.addEventListener('DOMContentLoaded', function() {
             const cardName = card.querySelector('.service-name').textContent.toLowerCase();
             const cardDescription = card.querySelector('.service-description').textContent.toLowerCase();
             
-            // Проверка категории
             const matchesCategory = activeCategory === 'all' || cardCategory === activeCategory;
             
-            // Проверка поиска
             const matchesSearch = !searchTerm || 
                                  cardName.includes(searchTerm) ||
                                  cardDescription.includes(searchTerm);
             
-            // Проверка цены
             const matchesPrice = cardPrice >= minPrice && cardPrice <= maxPrice;
             
             if (matchesCategory && matchesSearch && matchesPrice) {
-                card.style.display = 'flex'; /* Изменено с 'block' на 'flex' */
+                card.style.display = 'flex';
                 visibleCount++;
-                // Анимация появления
                 card.style.opacity = '0';
                 card.style.transform = 'translateY(20px)';
                 setTimeout(() => {
@@ -728,7 +700,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        // Сообщение, если ничего не найдено
         showNoResultsMessage(visibleCount);
     }
     
@@ -757,7 +728,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Инициализация
     filterServices();
 });
 </script>

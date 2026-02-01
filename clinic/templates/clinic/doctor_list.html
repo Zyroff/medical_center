@@ -1,12 +1,11 @@
 {% extends 'clinic/base.html' %}
 
-{% load static %}  <!-- ДОБАВЬТЕ ЭТУ СТРОКУ! -->
+{% load static %}
 
 {% block title %}Наши врачи - Медицинский центр «Здоровье»{% endblock %}
 
 {% block extra_css %}
 <style>
-    /* Специальные стили для страницы врачей */
     .doctors-hero {
         background: linear-gradient(135deg, rgba(75, 108, 183, 0.9), rgba(24, 40, 72, 0.95)), 
                     url("{% static 'images/doctors-bg.jpg' %}");
@@ -285,7 +284,6 @@
 {% endblock %}
 
 {% block content %}
-<!-- Герой-секция для страницы врачей -->
 <section class="doctors-hero">
     <div class="container">
         <h1>Наши врачи</h1>
@@ -293,7 +291,6 @@
     </div>
 </section>
 
-<!-- Фильтры и поиск -->
 <div class="filter-section">
     <div class="filter-buttons">
         <button class="filter-btn active" data-specialty="all">Все врачи</button>
@@ -311,9 +308,7 @@
     </div>
 </div>
 
-<!-- Сетка врачей -->
 <div class="doctors-grid" id="doctors-container">
-    <!-- Карточка врача 1 -->
     <div class="doctor-card" data-specialty="Кардиолог" data-name="Мария Сидорова">
         <div class="doctor-header">
             {% if doctor_images.0 %}
@@ -367,7 +362,6 @@
         </div>
     </div>
     
-    <!-- Карточка врача 2 -->
     <div class="doctor-card" data-specialty="Терапевт" data-name="Иван Петров">
         <div class="doctor-header">
             {% if doctor_images.1 %}
@@ -421,7 +415,6 @@
         </div>
     </div>
     
-    <!-- Карточка врача 3 -->
     <div class="doctor-card" data-specialty="Хирург" data-name="Алексей Козлов">
         <div class="doctor-header">
             {% if doctor_images.2 %}
@@ -475,7 +468,6 @@
         </div>
     </div>
     
-    <!-- Добавим ещё врачей для примера -->
     <div class="doctor-card" data-specialty="Невролог" data-name="Ольга Смирнова">
         <div class="doctor-header">
             <div class="doctor-image" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 4rem;">
@@ -526,7 +518,6 @@
     </div>
 </div>
 
-<!-- Пагинация -->
 <div class="pagination">
     <a href="#" class="page-link active">1</a>
     <a href="#" class="page-link">2</a>
@@ -539,17 +530,13 @@
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Фильтрация по специализации
     const filterBtns = document.querySelectorAll('.filter-btn');
     const doctorCards = document.querySelectorAll('.doctor-card');
     const searchInput = document.getElementById('doctor-search');
     
-    // Обработка фильтров
     filterBtns.forEach(btn => {
         btn.addEventListener('click', function() {
-            // Снимаем активный класс со всех кнопок
             filterBtns.forEach(b => b.classList.remove('active'));
-            // Добавляем активный класс текущей кнопке
             this.classList.add('active');
             
             const specialty = this.dataset.specialty;
@@ -557,7 +544,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Обработка поиска
     searchInput.addEventListener('input', function() {
         const activeFilter = document.querySelector('.filter-btn.active');
         const specialty = activeFilter ? activeFilter.dataset.specialty : 'all';
@@ -585,7 +571,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        // Показываем сообщение, если ничего не найдено
         let noResultsMsg = document.querySelector('.no-results');
         if (visibleCount === 0) {
             if (!noResultsMsg) {
@@ -603,7 +588,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Анимация при наведении на карточки
     doctorCards.forEach(card => {
         card.addEventListener('mouseenter', function() {
             this.style.transform = 'translateY(-10px)';

@@ -20,8 +20,8 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    path('admin/', admin.site.urls),  # Админка Django
-    path('', include('clinic.urls')),  # Все пути из clinic
+    path('admin/', admin.site.urls),
+    path('', include('clinic.urls')),
 ]
 
 if settings.DEBUG:

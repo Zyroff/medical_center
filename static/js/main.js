@@ -1,6 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
     
-    // ===== МОБИЛЬНОЕ МЕНЮ =====
     const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
     const navList = document.querySelector('.nav-list');
     const mobileOverlay = document.querySelector('.mobile-overlay');
@@ -21,7 +20,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // ===== КНОПКА "НАВЕРХ" =====
     const scrollToTopBtn = document.querySelector('.scroll-to-top');
     
     window.addEventListener('scroll', () => {
@@ -41,7 +39,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // ===== ЗАКРЫТИЕ СООБЩЕНИЙ =====
     document.querySelectorAll('.alert-close').forEach(button => {
         button.addEventListener('click', function() {
             const alert = this.closest('.alert');
@@ -52,7 +49,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Автоматическое скрытие сообщений
     setTimeout(() => {
         document.querySelectorAll('.alert').forEach(alert => {
             alert.style.opacity = '0';
@@ -62,7 +58,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }, 5000);
     
-    // ===== АКТИВНЫЕ ССЫЛКИ НАВИГАЦИИ =====
     function setActiveNavLink() {
         const currentPath = window.location.pathname;
         const navLinks = document.querySelectorAll('.nav-link');
@@ -79,7 +74,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     setActiveNavLink();
     
-    // ===== АНИМАЦИИ ПРИ СКРОЛЛЕ =====
     const observerOptions = {
         threshold: 0.1,
         rootMargin: '0px 0px -50px 0px'
@@ -93,14 +87,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }, observerOptions);
     
-    // Наблюдаем за элементами с анимацией
     document.querySelectorAll('.feature-card, .doctor-card').forEach(el => {
         el.style.opacity = '0';
         el.style.transform = 'translateY(20px)';
         observer.observe(el);
     });
     
-    // Добавляем стили для анимации
     const animationStyle = document.createElement('style');
     animationStyle.textContent = `
         .feature-card.animated,
@@ -117,7 +109,6 @@ document.addEventListener('DOMContentLoaded', function() {
     `;
     document.head.appendChild(animationStyle);
     
-    // ===== ПЛАВНЫЙ СКРОЛЛ ДЛЯ ССЫЛОК =====
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function(e) {
             const href = this.getAttribute('href');
@@ -135,7 +126,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     behavior: 'smooth'
                 });
                 
-                // Закрываем мобильное меню если открыто
                 if (navList.classList.contains('active')) {
                     navList.classList.remove('active');
                     mobileOverlay.classList.remove('active');
@@ -145,7 +135,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // ===== ФОРМЫ =====
     const forms = document.querySelectorAll('form');
     forms.forEach(form => {
         form.addEventListener('submit', function(e) {
@@ -157,7 +146,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // ===== ТАЙМЕР РАБОЧЕГО ВРЕМЕНИ =====
     function updateBusinessHours() {
         const now = new Date();
         const hour = now.getHours();
@@ -177,6 +165,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     updateBusinessHours();
-    setInterval(updateBusinessHours, 60000); // Обновлять каждую минуту
+    setInterval(updateBusinessHours, 60000);
     
 });

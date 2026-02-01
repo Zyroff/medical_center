@@ -9,11 +9,9 @@ class Command(BaseCommand):
         self.stdout.write("🔧 ДИАГНОСТИКА TELEGRAM БОТА")
         self.stdout.write("=" * 50)
         
-        # 1. Проверяем токен бота
         self.stdout.write("\n1. ПРОВЕРКА ТОКЕНА БОТА:")
         self.stdout.write(f"Токен: {telegram_service.token}")
         
-        # 2. Проверяем пациентов
         self.stdout.write("\n2. ПРОВЕРКА ПАЦИЕНТОВ:")
         patients = Patient.objects.all()
         
@@ -27,18 +25,15 @@ class Command(BaseCommand):
                 self.stdout.write(f"   Записей: {Appointment.objects.filter(patient=patient).count()}")
                 self.stdout.write("")
         
-        # 3. Тест отправки сообщения
         self.stdout.write("3. ТЕСТ ОТПРАВКИ СООБЩЕНИЯ:")
         
-        # Найдите пациента с telegram_id или используйте ваш ID
         patient_with_tg = Patient.objects.filter(telegram_id__isnull=False).first()
         
         if patient_with_tg:
             test_chat_id = patient_with_tg.telegram_id
             self.stdout.write(f"   Отправляем пациенту: {patient_with_tg.user.get_full_name()}")
         else:
-            # Используйте ваш Chat ID вручную
-            test_chat_id = "ВАШ_CHAT_ID"  # ЗАМЕНИТЕ НА ВАШ РЕАЛЬНЫЙ CHAT ID!
+            test_chat_id = "ВАШ_CHAT_ID"
             self.stdout.write(f"   Отправляем на Chat ID: {test_chat_id}")
         
         if test_chat_id and test_chat_id != "ВАШ_CHAT_ID":

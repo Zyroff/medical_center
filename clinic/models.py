@@ -7,11 +7,9 @@ from django.core.exceptions import ValidationError
 from django.conf import settings
 
 
-# ========== КАСТОМНАЯ МОДЕЛЬ ПОЛЬЗОВАТЕЛЯ ==========
 class User(AbstractUser):
     """Кастомная модель пользователя для клиники"""
     
-    # Типы входа
     TELEGRAM = 'telegram'
     EMAIL = 'email'
     LOGIN_CHOICES = [
@@ -19,7 +17,6 @@ class User(AbstractUser):
         (EMAIL, 'Email'),
     ]
     
-    # Роли пользователей
     CLIENT = 'client'
     DOCTOR = 'doctor'
     ADMIN = 'admin'
@@ -29,15 +26,12 @@ class User(AbstractUser):
         (ADMIN, 'Администратор'),
     ]
     
-    # Поля пользователя
     telegram_id = models.CharField(max_length=100, blank=True, null=True, unique=True)
     telegram_username = models.CharField(max_length=100, blank=True, null=True)
     login_method = models.CharField(max_length=10, choices=LOGIN_CHOICES, default=TELEGRAM)
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default=CLIENT)
     phone = models.CharField(max_length=20, blank=True, null=True)
     
-    # Используем settings.AUTH_USER_MODEL вместо прямого импорта User
-    # Для врачей - связь с профилем врача
     doctor_profile = models.OneToOneField(
         'Doctor', 
         on_delete=models.SET_NULL, 
@@ -46,13 +40,12 @@ class User(AbstractUser):
         related_name='user_account'
     )
     
-    # Исправляем related_name для избежания конфликтов
     groups = models.ManyToManyField(
         Group,
         verbose_name='groups',
         blank=True,
         help_text='The groups this user belongs to.',
-        related_name='clinic_user_groups',  # Уникальное имя
+        related_name='clinic_user_groups',
         related_query_name='clinic_user',
     )
     user_permissions = models.ManyToManyField(
@@ -60,7 +53,7 @@ class User(AbstractUser):
         verbose_name='user permissions',
         blank=True,
         help_text='Specific permissions for this user.',
-        related_name='clinic_user_permissions',  # Уникальное имя
+        related_name='clinic_user_permissions',
         related_query_name='clinic_user',
     )
     
@@ -72,7 +65,6 @@ class User(AbstractUser):
         return f"{self.username} ({self.get_role_display()})"
 
 
-# ========== МОДЕЛИ ТЕЛЕГРАМ АВТОРИЗАЦИИ ==========
 class TelegramAuthToken(models.Model):
     """Токен для авторизации через Telegram"""
     token = models.CharField(max_length=100, unique=True)
@@ -115,7 +107,6 @@ class DoctorAccessCode(models.Model):
         return f"Code {self.code} (expires: {self.expires_at.date()})"
 
 
-# ========== ОСНОВНЫЕ МОДЕЛИ КЛИНИКИ ==========
 class Patient(models.Model):
     """Пациент"""
     user = models.OneToOneField(
@@ -220,7 +211,6 @@ class Service(models.Model):
     duration = models.IntegerField(verbose_name='Длительность (мин)', default=30)
     price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Цена')
     
-    # ДОБАВЬТЕ ЭТУ СТРОКУ - связь многие-ко-многим с врачами
     doctors = models.ManyToManyField(
         'Doctor', 
         related_name='services', 
@@ -286,17 +276,15 @@ class Appointment(models.Model):
 
     def clean(self):
         """Валидация данных перед сохранением"""
-        # Проверяем, что время не в прошлом
         if self.date_time and self.date_time < timezone.now():
             raise ValidationError('Нельзя записаться на прошедшее время')
         
-        # Проверяем доступность времени
         if self.doctor and self.date_time and not self.is_time_available():
             raise ValidationError('Врач занят в это время. Выберите другое время.')
 
     def save(self, *args, **kwargs):
         """Переопределяем save для автоматической валидации"""
-        self.clean()  # Вызываем валидацию перед сохранением
+        self.clean()
         super().save(*args, **kwargs)
 
     class Meta:

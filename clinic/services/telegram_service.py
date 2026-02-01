@@ -5,14 +5,13 @@ import json
 from datetime import datetime, timedelta
 from django.utils import timezone
 from django.conf import settings
-from clinic.models import User, TelegramAuthToken  # Импортируем модели
+from clinic.models import User, TelegramAuthToken
 
 logger = logging.getLogger(__name__)
 
 class TelegramService:
     def __init__(self):
-        # ВАЖНО: замени токен на свой из BotFather
-        self.token = "8565788967:AAEC04r37NEfM4v1c12-3oHF2lJb5dgU_CM8"  # Убрал лишнюю точку
+        self.token = "8565788967:AAEC04r37NEfM4v1c12-3oHF2lJb5dgU_CM8"
         self.base_url = f"https://api.telegram.org/bot{self.token}"
     
     def send_message(self, chat_id, text, keyboard=None, parse_mode="HTML"):
@@ -25,7 +24,7 @@ class TelegramService:
         }
         
         if keyboard:
-            data["reply_markup"] = keyboard  # Исправил опечатку cpiy_markup -> reply_markup
+            data["reply_markup"] = keyboard
         
         try:
             response = requests.post(url, json=data, timeout=10)
@@ -53,13 +52,11 @@ class TelegramService:
             "one_time_keyboard": False
         }
     
-    # ========== НОВЫЕ МЕТОДЫ ДЛЯ АВТОРИЗАЦИИ ==========
     
     def generate_auth_token(self, telegram_id, role="client"):
         """Генерация токена для авторизации"""
         token = secrets.token_urlsafe(32)
         
-        # Сохраняем токен в БД
         TelegramAuthToken.objects.create(
             token=token,
             telegram_id=telegram_id,
@@ -71,13 +68,10 @@ class TelegramService:
     
     def send_auth_link(self, chat_id, role="client"):
         """Отправка ссылки для авторизации"""
-        # Генерируем токен
         token = self.generate_auth_token(chat_id, role)
         
-        # Формируем ссылку
         auth_url = f"{settings.SITE_URL}/telegram-auth?token={token}"
         
-        # Отправляем сообщение
         message = (
             f"🔐 <b>Ссылка для входа</b>\n\n"
             f"Нажмите на ссылку ниже, чтобы войти на сайт:\n"
@@ -113,11 +107,8 @@ class TelegramService:
     
     def verify_doctor_code(self, code):
         """Проверка кода доступа врача"""
-        # Здесь можно проверить код из БД или настроек
-        # Пример: хранить коды в settings или отдельной модели
         valid_codes = getattr(settings, 'DOCTOR_CODES', [])
         
-        # Или проверка в БД (если создали модель DoctorAccessCode)
         try:
             from clinic.models import DoctorAccessCode
             return DoctorAccessCode.objects.filter(
@@ -137,7 +128,7 @@ class TelegramService:
                 [{"text": "🔔 Уведомления"}],
                 [{"text": "⚙️ Настройки"}]
             ]
-        else:  # client
+        else:
             buttons = [
                 [{"text": "🩺 Записаться на прием"}],
                 [{"text": "📋 Мои записи"}],
@@ -160,11 +151,9 @@ class TelegramService:
         keyboard = self.create_main_menu(role)
         return self.send_message(chat_id, message, keyboard)
 
-# Создаем экземпляр сервиса (оставляем как было)
 telegram_service = TelegramService()
 
 
-# ========== ФУНКЦИИ ДЛЯ WEBHOOK ОБРАБОТЧИКА ==========
 
 def handle_telegram_update(update):
     """Обработка входящих сообщений от Telegram"""
@@ -174,11 +163,9 @@ def handle_telegram_update(update):
             chat_id = message['chat']['id']
             text = message.get('text', '')
             
-            # Обработка команды /start
             if text.startswith('/start'):
                 handle_start_command(chat_id, text)
             
-            # Обработка кода доступа врача
             elif is_waiting_for_code(chat_id):
                 handle_doctor_code(chat_id, text)
                 
@@ -187,7 +174,6 @@ def handle_telegram_update(update):
             chat_id = callback['message']['chat']['id']
             data = callback['data']
             
-            # Обработка выбора роли
             if data.startswith('role_'):
                 handle_role_selection(chat_id, data)
                 
@@ -196,27 +182,21 @@ def handle_telegram_update(update):
 
 def handle_start_command(chat_id, text):
     """Обработка команды /start"""
-    # Проверяем, есть ли пользователь в БД
     try:
         user = User.objects.get(telegram_id=str(chat_id))
-        # Если пользователь уже есть - отправляем меню
         telegram_service.send_welcome_back(chat_id, user.username, user.role)
         return
     except User.DoesNotExist:
         pass
     
-    # Если есть параметр (например, /start doctor_code)
     if len(text.split()) > 1:
         param = text.split()[1]
-        # Можно обработать специальные параметры
         if param.startswith('code_'):
             code = param.replace('code_', '')
-            # Проверка кода и авторизация врача
             if telegram_service.verify_doctor_code(code):
                 telegram_service.send_auth_link(chat_id, "doctor")
                 return
     
-    # Иначе показываем выбор роли
     telegram_service.send_role_selection(chat_id)
 
 def handle_role_selection(chat_id, role_data):
@@ -227,12 +207,10 @@ def handle_role_selection(chat_id, role_data):
         telegram_service.send_auth_link(chat_id, "client")
     elif role == 'staff':
         telegram_service.send_doctor_code_request(chat_id)
-        # Здесь можно сохранить состояние "ожидает код" в кэш или БД
 
 def is_waiting_for_code(chat_id):
     """Проверяет, ожидает ли пользователь ввода кода"""
-    # Можно реализовать через кэш (Redis) или временную таблицу
-    return False  # Заглушка
+    return False
 
 def handle_doctor_code(chat_id, code):
     """Обработка введенного кода врача"""

@@ -10,13 +10,11 @@
     padding: 0 20px;
 }
 
-/* Основной контент */
 main {
     flex: 1;
     padding: 40px 0;
 }
 
-/* Герой-секция */
 .hero-section {
     background: linear-gradient(135deg, rgba(44, 128, 255, 0.9), rgba(0, 201, 167, 0.9)),
                 url('{% static "images/hero-bg.jpg" %}');
@@ -71,7 +69,6 @@ main {
     flex-wrap: wrap;
 }
 
-/* Кнопки */
 .btn {
     display: inline-flex;
     align-items: center;
@@ -123,7 +120,6 @@ main {
     border-color: white;
 }
 
-/* Карточки */
 .feature-card {
     background: white;
     border-radius: 15px;
@@ -176,7 +172,6 @@ main {
     margin-bottom: 20px;
 }
 
-/* Сетка */
 .features-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -184,7 +179,6 @@ main {
     margin-top: 40px;
 }
 
-/* Заголовки разделов */
 .section-title {
     text-align: center;
     margin-bottom: 50px;
@@ -218,7 +212,6 @@ main {
     margin: 0 auto;
 }
 
-/* Анимации */
 .fade-in {
     animation: fadeIn 0.6s ease forwards;
 }
@@ -318,7 +311,7 @@ main {
 
 .doctor-actions {
     display: flex;
-    gap: 12px; /* Расстояние между кнопками */
+    gap: 12px;
     margin-top: 20px;
     width: 100%;
 }
@@ -327,19 +320,18 @@ main {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px; /* Расстояние между иконкой и текстом */
+    gap: 8px;
     padding: 12px 20px;
     border-radius: 8px;
     text-decoration: none;
     font-weight: 500;
     font-size: 15px;
     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-    flex: 1; /* Делаем кнопки одинаковой ширины */
+    flex: 1;
     text-align: center;
-    min-height: 44px; /* Минимальная высота для удобства нажатия */
+    min-height: 44px;
 }
 
-/* Стиль для кнопки "Подробнее" */
 .doctor-actions .btn-outline {
     border: 2px solid #4a6fa5;
     color: #4a6fa5;
@@ -353,7 +345,6 @@ main {
     box-shadow: 0 4px 12px rgba(74, 111, 165, 0.3);
 }
 
-/* Стиль для кнопки "Записаться" */
 .doctor-actions .btn-primary {
     background: linear-gradient(135deg, #4a6fa5 0%, #3a5985 100%);
     color: white;
@@ -367,10 +358,9 @@ main {
     box-shadow: 0 4px 12px rgba(58, 89, 133, 0.3);
 }
 
-/* Для мобильных устройств */
 @media (max-width: 768px) {
     .doctor-actions {
-        flex-direction: column; /* Кнопки становятся друг под другом на мобильных */
+        flex-direction: column;
         gap: 10px;
     }
     
@@ -404,7 +394,6 @@ main {
     border: 2px solid transparent;
 }
 
-/* Кнопка "Записаться" */
 .service-actions .btn-primary {
     background: linear-gradient(135deg, #28a745 0%, #218838 100%);
     color: white;
@@ -417,7 +406,6 @@ main {
     box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
 }
 
-/* Кнопка "Подробнее" */
 .service-actions .btn-outline {
     border: 2px solid #6c757d;
     color: #6c757d;
@@ -431,7 +419,6 @@ main {
     box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
 }
 
-/* Адаптивность */
 @media (max-width: 768px) {
     .service-actions {
         flex-direction: column;

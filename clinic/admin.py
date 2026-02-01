@@ -6,7 +6,6 @@ from .models import (
     TelegramAuthToken, DoctorAccessCode
 )
 
-# Регистрируем кастомную модель User
 @admin.register(User)
 class CustomUserAdmin(UserAdmin):
     list_display = ('username', 'email', 'first_name', 'last_name', 'role', 'is_staff')
@@ -22,7 +21,6 @@ class CustomUserAdmin(UserAdmin):
         }),
     )
 
-# Регистрируем остальные модели
 @admin.register(Doctor)
 class DoctorAdmin(admin.ModelAdmin):
     list_display = ('full_name', 'specialization', 'room', 'is_active')

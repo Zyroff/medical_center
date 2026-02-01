@@ -14,7 +14,6 @@
                     <h4 class="mb-4">Как вы хотите войти?</h4>
                     
                     <div class="row">
-                        <!-- Для пациентов -->
                         <div class="col-md-6 mb-4">
                             <div class="card h-100">
                                 <div class="card-body">
@@ -28,7 +27,6 @@
                             </div>
                         </div>
                         
-                        <!-- Для врачей -->
                         <div class="col-md-6 mb-4">
                             <div class="card h-100">
                                 <div class="card-body">
@@ -43,14 +41,12 @@
                         </div>
                     </div>
                     
-                    <!-- Кнопка Telegram -->
                     <div class="mt-4">
                         <a href="#" class="btn btn-outline-primary btn-lg" onclick="openTelegramAuth()">
                             <i class="fab fa-telegram"></i> Быстрый вход через Telegram
                         </a>
                     </div>
                     
-                    <!-- Для администраторов (только видно админам) -->
                     {% if request.user.is_superuser %}
                     <hr class="my-4">
                     <div class="alert alert-warning">
@@ -70,9 +66,7 @@
 
 <script>
 function openTelegramAuth() {
-    // Функция для Telegram авторизации
     alert('Функция входа через Telegram будет доступна после настройки бота');
-    // window.open('https://t.me/your_bot?start=login', '_blank');
 }
 </script>
 {% endblock %}
