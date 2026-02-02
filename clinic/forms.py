@@ -1,12 +1,102 @@
 from django import forms
-from .models import Appointment, Patient, User
-from django.utils import timezone
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import get_user_model  # ← ВАЖНО!
+from django.utils import timezone
 from django.core.exceptions import ValidationError
-from datetime import date
-from .models import User, Patient, Doctor, Service, Appointment
+from .models import Appointment, Doctor, Service, Patient
 
+# Получаем кастомную модель User
+User = get_user_model()
+
+class PatientRegistrationForm(UserCreationForm):
+    """Форма регистрации пациента для кастомной модели User"""
+    phone = forms.CharField(
+        max_length=20,
+        required=True,
+        label='Телефон',
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': '+7 (999) 999-99-99'
+        })
+    )
+    birth_date = forms.DateField(
+        required=True,
+        label='Дата рождения',
+        widget=forms.DateInput(attrs={
+            'type': 'date',
+            'class': 'form-control'
+        })
+    )
+    first_name = forms.CharField(
+        required=True,
+        max_length=30,
+        label='Имя',
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+    last_name = forms.CharField(
+        required=True,
+        max_length=30,
+        label='Фамилия',
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+    email = forms.EmailField(
+        required=True,
+        label='Email',
+        widget=forms.EmailInput(attrs={'class': 'form-control'})
+    )
+    
+    class Meta:
+        model = User  # Используем кастомную модель User
+        fields = ['username', 'first_name', 'last_name', 'email', 'phone', 'birth_date', 'password1', 'password2']
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Настраиваем поля паролей
+        self.fields['password1'].widget.attrs.update({'class': 'form-control'})
+        self.fields['password2'].widget.attrs.update({'class': 'form-control'})
+        self.fields['username'].widget.attrs.update({'class': 'form-control'})
+    
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        if User.objects.filter(username=username).exists():
+            raise forms.ValidationError('Это имя пользователя уже занято')
+        return username
+    
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if User.objects.filter(email=email).exists():
+            raise forms.ValidationError('Этот email уже используется')
+        return email
+    
+    def clean_phone(self):
+        phone = self.cleaned_data.get('phone')
+        if Patient.objects.filter(phone=phone).exists():
+            raise forms.ValidationError('Этот телефон уже зарегистрирован')
+        return phone
+    
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.email = self.cleaned_data['email']
+        user.first_name = self.cleaned_data['first_name']
+        user.last_name = self.cleaned_data['last_name']
+        user.role = User.CLIENT  # Устанавливаем роль пациента
+        
+        # Сохраняем телефон в пользователе, если есть поле
+        if hasattr(user, 'phone'):
+            user.phone = self.cleaned_data['phone']
+        
+        if commit:
+            user.save()
+            # Создаем профиль пациента
+            Patient.objects.create(
+                user=user,
+                phone=self.cleaned_data['phone'],
+                birth_date=self.cleaned_data['birth_date'],
+                address=''
+            )
+        return user
 class AppointmentForm(forms.ModelForm):
+    """Форма записи на прием"""
     class Meta:
         model = Appointment
         fields = ['doctor', 'service', 'date_time', 'notes']
@@ -39,11 +129,9 @@ class AppointmentForm(forms.ModelForm):
         self.fields['doctor'].queryset = Doctor.objects.filter(is_active=True).order_by('specialization', 'user__last_name')
         self.fields['service'].queryset = Service.objects.all().order_by('name')
         
-        self.fields['doctor'].queryset = Doctor.objects.filter(is_active=True)
         self.fields['doctor'].empty_label = "Выберите врача"
         self.fields['doctor'].label = "Врач"
         
-        self.fields['service'].queryset = Service.objects.all()
         self.fields['service'].empty_label = "Выберите услугу"
         self.fields['service'].label = "Услуга"
         
@@ -84,100 +172,3 @@ class AppointmentForm(forms.ModelForm):
                 raise ValidationError("Врач занят в это время. Выберите другое время.")
         
         return cleaned_data
-    
-
-
-class PatientRegistrationForm(UserCreationForm):
-    phone = forms.CharField(
-        max_length=20, 
-        label="Телефон", 
-        required=True,
-        widget=forms.TextInput(attrs={'placeholder': '+7 (999) 123-45-67'})
-    )
-    
-    birth_date = forms.DateField(
-        label="Дата рождения", 
-        widget=forms.SelectDateWidget(
-            years=range(1920, date.today().year + 1),
-            empty_label=("Год", "Месяц", "День")
-        ),
-        required=True
-    )
-    
-    first_name = forms.CharField(
-        max_length=30, 
-        label="Имя", 
-        required=True,
-        widget=forms.TextInput(attrs={'placeholder': 'Иван'})
-    )
-    
-    last_name = forms.CharField(
-        max_length=30, 
-        label="Фамилия", 
-        required=True,
-        widget=forms.TextInput(attrs={'placeholder': 'Иванов'})
-    )
-    
-    email = forms.EmailField(
-        label="Email", 
-        required=True,
-        widget=forms.EmailInput(attrs={'placeholder': 'ivan@example.com'})
-    )
-    
-    class Meta:
-        model = User
-        fields = ['username', 'email', 'first_name', 'last_name', 'phone', 'birth_date', 'password1', 'password2']
-    
-    def clean_birth_date(self):
-        """Валидация даты рождения"""
-        birth_date = self.cleaned_data.get('birth_date')
-        
-        if not birth_date:
-            raise ValidationError("Пожалуйста, выберите дату рождения")
-        
-        if birth_date > date.today():
-            raise ValidationError("Дата рождения не может быть в будущем")
-        
-        age = (date.today() - birth_date).days / 365.25
-        
-        if age < 1:
-            raise ValidationError("Возраст должен быть не менее 1 года")
-        if age > 150:
-            raise ValidationError("Пожалуйста, проверьте дату рождения")
-        
-        return birth_date
-    
-    def clean_phone(self):
-        """Валидация телефона"""
-        phone = self.cleaned_data.get('phone')
-        
-        digits = ''.join(filter(str.isdigit, phone))
-        
-        if len(digits) < 10 or len(digits) > 15:
-            raise ValidationError("Введите корректный номер телефона")
-        
-        return phone
-    
-    def clean_email(self):
-        """Проверка уникальности email"""
-        email = self.cleaned_data.get('email')
-        
-        if User.objects.filter(email=email).exists():
-            raise ValidationError("Пользователь с таким email уже зарегистрирован")
-        
-        return email
-    
-    def save(self, commit=True):
-        user = super().save(commit=False)
-        user.role = User.CLIENT
-        user.phone = self.cleaned_data['phone']
-        user.login_method = User.EMAIL
-        
-        if commit:
-            user.save()
-            Patient.objects.create(
-                user=user,
-                phone=self.cleaned_data['phone'],
-                birth_date=self.cleaned_data['birth_date']
-            )
-        return user

@@ -8,54 +8,52 @@ from django.conf import settings
 
 
 class User(AbstractUser):
-    """Кастомная модель пользователя для клиники"""
-    
-    TELEGRAM = 'telegram'
-    EMAIL = 'email'
-    LOGIN_CHOICES = [
-        (TELEGRAM, 'Telegram'),
-        (EMAIL, 'Email'),
-    ]
-    
+    """Кастомная модель пользователя"""
     CLIENT = 'client'
     DOCTOR = 'doctor'
     ADMIN = 'admin'
+    
     ROLE_CHOICES = [
-        (CLIENT, 'Клиент'),
+        (CLIENT, 'Пациент'),
         (DOCTOR, 'Врач'),
         (ADMIN, 'Администратор'),
     ]
     
-    telegram_id = models.CharField(max_length=100, blank=True, null=True, unique=True)
-    telegram_username = models.CharField(max_length=100, blank=True, null=True)
-    login_method = models.CharField(max_length=10, choices=LOGIN_CHOICES, default=TELEGRAM)
-    role = models.CharField(max_length=10, choices=ROLE_CHOICES, default=CLIENT)
-    phone = models.CharField(max_length=20, blank=True, null=True)
+    TELEGRAM = 'telegram'
+    EMAIL = 'email'
+    PHONE = 'phone'
     
-    doctor_profile = models.OneToOneField(
-        'Doctor', 
-        on_delete=models.SET_NULL, 
-        null=True, 
+    LOGIN_METHOD_CHOICES = [
+        (TELEGRAM, 'Telegram'),
+        (EMAIL, 'Email'),
+        (PHONE, 'Телефон'),
+    ]
+    
+    role = models.CharField(
+        max_length=20,
+        choices=ROLE_CHOICES,
+        default=CLIENT,
+        verbose_name='Роль'
+    )
+    login_method = models.CharField(
+        max_length=20,
+        choices=LOGIN_METHOD_CHOICES,
+        default=EMAIL,
+        verbose_name='Способ входа'
+    )
+    phone = models.CharField(
+        max_length=20,
         blank=True,
-        related_name='user_account'
+        verbose_name='Телефон'
+    )
+    telegram_id = models.CharField(
+        max_length=100,
+        blank=True,
+        verbose_name='Telegram ID'
     )
     
-    groups = models.ManyToManyField(
-        Group,
-        verbose_name='groups',
-        blank=True,
-        help_text='The groups this user belongs to.',
-        related_name='clinic_user_groups',
-        related_query_name='clinic_user',
-    )
-    user_permissions = models.ManyToManyField(
-        Permission,
-        verbose_name='user permissions',
-        blank=True,
-        help_text='Specific permissions for this user.',
-        related_name='clinic_user_permissions',
-        related_query_name='clinic_user',
-    )
+    def __str__(self):
+        return f"{self.username} ({self.get_role_display()})"
     
     class Meta:
         verbose_name = 'Пользователь'
@@ -237,10 +235,12 @@ class Appointment(models.Model):
     ]
 
     patient = models.ForeignKey(
-        Patient, 
-        on_delete=models.CASCADE, 
-        verbose_name='Пациент'
-    )
+    Patient, 
+    on_delete=models.CASCADE, 
+    verbose_name='Пациент',
+    null=True,      # Добавь если еще нет
+    blank=True      # Добавь если еще нет
+)
     doctor = models.ForeignKey(
         Doctor, 
         on_delete=models.CASCADE, 

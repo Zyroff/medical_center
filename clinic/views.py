@@ -1,6 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from .forms import PatientRegistrationForm
+from .forms import PatientRegistrationForm, AppointmentForm
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -22,8 +22,6 @@ from .services.telegram_service import telegram_service
 
 logger = logging.getLogger(__name__)
 
-
-
 def home(request):
     """Главная страница"""
     if request.user.is_authenticated:
@@ -33,8 +31,6 @@ def home(request):
             return redirect('patient_profile')
     
     return render(request, 'clinic/home.html')
-
-
 
 class CustomLoginView(View):
     """Кастомная страница входа для клиентов и работников"""
@@ -71,23 +67,18 @@ class CustomLoginView(View):
         
         return render(request, 'clinic/login.html', {'form': form})
 
-
 def custom_logout(request):
     """Выход из системы с полной очисткой сессии"""
     request.session.flush()
-    
     logout(request)
-    
     messages.success(request, 'Вы успешно вышли из системы.')
     
     response = redirect('home')
-    
     response['Cache-Control'] = 'no-cache, no-store, must-revalidate'
     response['Pragma'] = 'no-cache'
     response['Expires'] = '0'
     
     return response
-
 
 def telegram_auth(request):
     """Авторизация через Telegram"""
@@ -129,19 +120,15 @@ def telegram_auth(request):
     except TelegramAuthToken.DoesNotExist:
         return redirect('login_failed')
 
-
 def login_failed(request):
     """Страница неудачного входа"""
     return render(request, 'clinic/login_failed.html', {
         'error': 'Недействительная или просроченная ссылка для входа. Попробуйте снова.'
     })
 
-
 def access_denied(request):
     """Страница "Доступ запрещен" """
     return render(request, 'clinic/access_denied.html')
-
-
 
 class DoctorListView(ListView):
     """Список всех врачей"""
@@ -150,13 +137,11 @@ class DoctorListView(ListView):
     context_object_name = 'doctors'
     queryset = Doctor.objects.filter(is_active=True).order_by('specialization')
 
-
 class DoctorDetailView(DetailView):
     """Детальная информация о враче"""
     model = Doctor
     template_name = 'clinic/doctor_detail.html'
     context_object_name = 'doctor'
-
 
 class ServiceListView(ListView):
     """Список всех услуг"""
@@ -165,9 +150,8 @@ class ServiceListView(ListView):
     context_object_name = 'services'
     queryset = Service.objects.all().order_by('name')
 
-
-
-class AppointmentCreateView(LoginRequiredMixin, CreateView):
+@method_decorator(login_required(login_url='/login/'), name='dispatch')
+class AppointmentCreateView(CreateView):
     """Создание новой записи на прием"""
     model = Appointment
     form_class = AppointmentForm
@@ -199,16 +183,8 @@ class AppointmentCreateView(LoginRequiredMixin, CreateView):
             return response
             
         except Patient.DoesNotExist:
-            messages.error(self.request, 'Профиль пациента не найден.')
+            messages.error(self.request, 'Профиль пациента не найден. Сначала заполните профиль.')
             return redirect('patient_profile')
-
-@method_decorator(login_required(login_url='/login/'), name='dispatch')
-class AppointmentCreateView(CreateView):
-    """Создание новой записи на прием"""
-    model = Appointment
-    form_class = AppointmentForm
-    template_name = 'clinic/appointment_create.html'
-    success_url = reverse_lazy('appointment_list')
 
 class AppointmentListView(LoginRequiredMixin, ListView):
     """Список записей текущего пациента"""
@@ -224,8 +200,6 @@ class AppointmentListView(LoginRequiredMixin, ListView):
             ).order_by('-date_time')
         except Patient.DoesNotExist:
             return Appointment.objects.none()
-
-
 
 @login_required
 def patient_profile(request):
@@ -253,12 +227,14 @@ def patient_profile(request):
         })
         
     except Patient.DoesNotExist:
+        # Если нет профиля пациента, создаем его
         patient = Patient.objects.create(
             user=request.user,
             phone=request.user.phone or '',
             birth_date=timezone.now().date(),
             address=''
         )
+        messages.info(request, 'Создан новый профиль пациента. Заполните данные.')
         return redirect('patient_profile')
 
 @login_required
@@ -303,8 +279,6 @@ def doctor_dashboard(request):
         
         return redirect('access_denied')
 
-
-
 @csrf_exempt
 def telegram_webhook(request):
     """Webhook для обработки сообщений от Telegram"""
@@ -323,7 +297,6 @@ def telegram_webhook(request):
             return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
     
     return JsonResponse({'status': 'method not allowed'}, status=405)
-
 
 def handle_telegram_start_command(chat_id, text):
     """Обработка команды /start в Telegram"""
@@ -363,7 +336,6 @@ def handle_telegram_start_command(chat_id, text):
         )
         return JsonResponse({'status': 'error'})
 
-
 def handle_appointment_confirmation(appointment_id, chat_id):
     """Обработка подтверждения записи через Telegram"""
     try:
@@ -389,7 +361,6 @@ def handle_appointment_confirmation(appointment_id, chat_id):
         telegram_service.send_message(chat_id, "❌ Запись не найдена")
         return JsonResponse({'status': 'error'})
 
-
 def handle_appointment_reschedule(appointment_id, chat_id):
     """Обработка запроса на перенос записи"""
     telegram_service.send_message(
@@ -398,8 +369,6 @@ def handle_appointment_reschedule(appointment_id, chat_id):
         "Или отмените текущую запись и создайте новую в личном кабинете."
     )
     return JsonResponse({'status': 'reschedule_requested'})
-
-
 
 def test_telegram(request):
     """Тестовая функция для проверки Telegram бота"""
@@ -429,7 +398,6 @@ def test_telegram(request):
             'message': f'Ошибка: {str(e)}'
         })
 
-
 def set_telegram_webhook(request):
     """Установка вебхука для Telegram бота"""
     try:
@@ -439,7 +407,7 @@ def set_telegram_webhook(request):
         
         return JsonResponse({
             'status': 'success',
-            'message': f'Вебхук установлен: {webhook_url}'
+            'message': f'Вебхук установен: {webhook_url}'
         })
         
     except Exception as e:
@@ -448,35 +416,72 @@ def set_telegram_webhook(request):
             'message': f'Ошибка: {str(e)}'
         })
 
-
-
 def about(request):
     """Страница "О клинике" """
     return render(request, 'clinic/about.html')
 
-
 def contacts(request):
     """Страница "Контакты" """
     return render(request, 'clinic/contacts.html')
-
 
 def privacy_policy(request):
     """Политика конфиденциальности"""
     return render(request, 'clinic/privacy_policy.html')
 
 def register_patient(request):
+    """Регистрация нового пациента"""
+    # Если пользователь уже авторизован, редиректим
+    if request.user.is_authenticated:
+        messages.info(request, 'Вы уже авторизованы в системе')
+        return redirect('patient_profile')
+    
     if request.method == 'POST':
         form = PatientRegistrationForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            Patient.objects.create(
-                user=user,
-                phone=form.cleaned_data['phone'],
-                birth_date=timezone.now().date()
-            )
-            messages.success(request, 'Регистрация успешна! Теперь войдите в систему.')
-            return redirect('custom_login')
+            try:
+                # Сохраняем пользователя
+                user = form.save()
+                
+                # Автоматически логиним пользователя
+                from django.contrib.auth import login
+                login(request, user)
+                
+                messages.success(request, f'Регистрация успешна! Добро пожаловать, {user.first_name}!')
+                return redirect('patient_profile')
+                
+            except Exception as e:
+                messages.error(request, f'Ошибка регистрации: {str(e)}')
+                logger.error(f'Registration error: {e}')
+        else:
+            messages.error(request, 'Пожалуйста, исправьте ошибки в форме.')
     else:
         form = PatientRegistrationForm()
     
     return render(request, 'clinic/register.html', {'form': form})
+
+def appointment_create(request):
+    """Создание записи на прием (альтернативная вьюшка)"""
+    if request.method == 'POST':
+        form = AppointmentForm(request.POST, user=request.user)
+        if form.is_valid():
+            try:
+                appointment = form.save(commit=False)
+                patient = Patient.objects.get(user=request.user)
+                appointment.patient = patient
+                appointment.status = 'pending'
+                appointment.save()
+                
+                # Отправляем уведомление в Telegram
+                if patient.telegram_id:
+                    patient.send_telegram_reminder(appointment)
+                
+                messages.success(request, 'Запись успешно создана!')
+                return redirect('appointment_list')
+                
+            except Patient.DoesNotExist:
+                messages.error(request, 'Профиль пациента не найден. Сначала заполните профиль.')
+                return redirect('patient_profile')
+    else:
+        form = AppointmentForm(user=request.user)
+    
+    return render(request, 'clinic/appointment_create.html', {'form': form})
