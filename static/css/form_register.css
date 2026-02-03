@@ -1,0 +1,360 @@
+/* Основные стили для регистрации */
+main .container {
+    max-width: 650px;
+    margin: 3rem auto;
+    animation: fadeInUp 0.6s ease forwards;
+}
+
+.card {
+    border-radius: 15px;
+    border: none;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.card:hover {
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    color: white;
+    padding: 30px 35px;
+    border-radius: 15px 15px 0 0 !important;
+    border: none;
+}
+
+.card-header h2 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 2rem;
+    margin: 0;
+    text-align: center;
+}
+
+.card-body {
+    padding: 35px 40px;
+}
+
+/* Стили для алертов */
+.alert {
+    border-radius: 12px;
+    padding: 18px 22px;
+    border: none;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.95rem;
+}
+
+.alert-danger {
+    background: linear-gradient(135deg, rgba(220, 53, 69, 0.1), rgba(220, 53, 69, 0.05));
+    color: #721c24;
+    border-left: 5px solid #dc3545;
+}
+
+.alert-danger strong {
+    font-weight: 700;
+    margin-bottom: 12px;
+    display: block;
+    font-size: 1.1rem;
+}
+
+.alert-danger ul {
+    margin: 12px 0 0 0;
+    padding-left: 22px;
+}
+
+.alert-danger li {
+    margin-bottom: 8px;
+    line-height: 1.5;
+}
+
+/* Стили для формы - КРУПНЫЕ И УДОБНЫЕ ИНПУТЫ */
+.form-label {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    color: var(--dark-color);
+    margin-bottom: 12px;
+    font-size: 1rem;
+    display: block;
+}
+
+.form-label::after {
+    content: ' *';
+    color: #dc3545;
+}
+
+.form-control, select {
+    border-radius: 12px;
+    padding: 16px 18px;
+    border: 2px solid #e1e5eb;
+    font-size: 1.05rem;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    background: white;
+    font-family: 'Montserrat', sans-serif;
+    width: 100%;
+    min-height: 56px;
+    line-height: 1.5;
+}
+
+.form-control:focus, select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.3rem rgba(44, 128, 255, 0.2);
+    transform: translateY(-2px);
+    outline: none;
+}
+
+.form-control:hover, select:hover {
+    border-color: #a8b5c9;
+}
+
+select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23444' stroke-linecap='round' stroke-linejoin='round' stroke-width='2.5' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 20px center;
+    background-size: 18px;
+    padding-right: 50px;
+    cursor: pointer;
+}
+
+.form-text {
+    color: var(--gray-color);
+    font-size: 0.9rem;
+    margin-top: 8px;
+    display: block;
+    padding-left: 5px;
+    line-height: 1.4;
+}
+
+.text-danger {
+    color: #dc3545 !important;
+    font-size: 0.9rem;
+    margin-top: 8px;
+    font-weight: 500;
+    display: block;
+    padding-left: 5px;
+}
+
+/* Стили для строк и колонок */
+.row {
+    margin: 0 -15px;
+}
+
+.row > [class*='col-'] {
+    padding: 0 15px;
+}
+
+.mb-3 {
+    margin-bottom: 25px !important;
+}
+
+/* Стили для кнопок - КРУПНЫЕ И УДОБНЫЕ */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 18px 32px;
+    border-radius: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    border: none;
+    cursor: pointer;
+    font-size: 1.1rem;
+    font-family: 'Montserrat', sans-serif;
+    text-align: center;
+    min-height: 58px;
+    width: 100%;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+    color: white;
+    box-shadow: 0 6px 20px rgba(44, 128, 255, 0.3);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(44, 128, 255, 0.4);
+}
+
+.btn-outline-secondary {
+    background: white;
+    color: var(--gray-color);
+    border: 2.5px solid #dee2e6;
+}
+
+.btn-outline-secondary:hover {
+    background: #f8f9fa;
+    color: var(--dark-color);
+    border-color: #adb5bd;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.d-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 35px;
+}
+
+/* Стили для поля даты рождения */
+.row.g-2 {
+    margin: 0 -8px;
+}
+
+.row.g-2 > [class*='col-'] {
+    padding: 0 8px;
+}
+
+/* Анимация */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Адаптивность - сохраняем крупные размеры на мобильных */
+@media (max-width: 768px) {
+    .container {
+        margin: 1.5rem auto;
+        padding: 0 20px;
+    }
+    
+    .card {
+        margin: 0;
+        border-radius: 12px;
+    }
+    
+    .card-header,
+    .card-body {
+        padding: 25px 20px;
+    }
+    
+    .card-header h2 {
+        font-size: 1.7rem;
+    }
+    
+    .form-label {
+        font-size: 0.95rem;
+        margin-bottom: 10px;
+    }
+    
+    /* Сохраняем крупные инпуты на мобильных */
+    .form-control, select {
+        padding: 14px 16px;
+        min-height: 52px;
+        font-size: 1rem;
+    }
+    
+    .btn {
+        padding: 16px 24px;
+        min-height: 54px;
+        font-size: 1.05rem;
+    }
+    
+    .row {
+        margin: 0 -10px;
+    }
+    
+    .row > [class*='col-'] {
+        padding: 0 10px;
+        margin-bottom: 20px;
+    }
+    
+    .mb-3 {
+        margin-bottom: 22px !important;
+    }
+    
+    .alert {
+        padding: 16px 20px;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .row > [class*='col-md-6'] {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+    
+    .row.g-2 .col-4 {
+        width: 100%;
+        margin-bottom: 12px;
+    }
+    
+    .form-control, select {
+        padding: 14px 16px;
+        min-height: 50px;
+    }
+    
+    select {
+        background-position: right 16px center;
+        padding-right: 45px;
+    }
+}
+
+/* Специальные стили для полей */
+input[type="date"]::-webkit-calendar-picker-indicator {
+    opacity: 0.7;
+    cursor: pointer;
+    padding: 8px;
+    margin-left: 10px;
+    width: 24px;
+    height: 24px;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+    opacity: 1;
+}
+
+/* Улучшенные плейсхолдеры */
+::placeholder {
+    color: #adb5bd;
+    opacity: 0.8;
+    font-size: 0.95rem;
+}
+
+/* Фокус на полях с ошибками */
+.form-control.is-invalid {
+    border-color: #dc3545;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='16' height='16' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='5.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 7z'/%3e%3ccircle cx='6' cy='8.5' r='.7' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 18px center;
+    background-size: 18px;
+    padding-right: 50px;
+}
+
+.form-control.is-invalid:focus {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25);
+}
+
+/* Иконки для лучшего UX */
+.form-control {
+    background-position: right 18px center;
+    background-repeat: no-repeat;
+}
+
+/* Отступы для лучшей читаемости */
+form {
+    padding: 5px 0;
+}
+
+/* Ховер эффекты для всей карточки */
+.card-body .form-control:hover,
+.card-body select:hover {
+    background-color: #f8f9fa;
+}

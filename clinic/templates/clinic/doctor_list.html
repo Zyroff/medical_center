@@ -309,6 +309,7 @@
 </div>
 
 <div class="doctors-grid" id="doctors-container">
+    {% for doctor in doctors %}
     <div class="doctor-card" data-specialty="Кардиолог" data-name="Мария Сидорова">
         <div class="doctor-header">
             {% if doctor_images.0 %}
@@ -322,8 +323,8 @@
             <div class="doctor-availability">Принимает сейчас</div>
         </div>
         <div class="doctor-info">
-            <h3 class="doctor-name">Др. Мария Сидорова</h3>
-            <p class="doctor-specialty">Кардиолог</p>
+            <h3 class="doctor-name">Др. Мария Сидорова{{ doctor.user.last_name }}</h3>
+            <p class="doctor-specialty">{{ doctor.specialization }}</p>
             
             <div class="doctor-details">
                 <div class="detail-item">
@@ -352,179 +353,16 @@
             </div>
             
             <div class="doctor-actions">
-                <a href="#" class="btn btn-outline">
-                    <i class="fas fa-info-circle"></i> Подробнее
-                </a>
-                <a href="{% url 'appointment_create' %}" class="btn btn-primary">
-                    <i class="fas fa-calendar-check"></i> Записаться
-                </a>
-            </div>
-        </div>
-    </div>
-    
-    <div class="doctor-card" data-specialty="Терапевт" data-name="Иван Петров">
-        <div class="doctor-header">
-            {% if doctor_images.1 %}
-            <img src="{% static 'images/doctors/doctor2.jpg' %}" alt="Иван Петров" class="doctor-image">
-            {% else %}
-            <div class="doctor-image" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 4rem;">
-                <i class="fas fa-user-md"></i>
-            </div>
-            {% endif %}
-            <div class="doctor-category">Первая категория</div>
-            <div class="doctor-availability">Принимает сейчас</div>
-        </div>
-        <div class="doctor-info">
-            <h3 class="doctor-name">Др. Иван Петров</h3>
-            <p class="doctor-specialty">Терапевт</p>
-            
-            <div class="doctor-details">
-                <div class="detail-item">
-                    <i class="fas fa-briefcase-medical"></i>
-                    <span>Стаж работы: <strong>10 лет</strong></span>
-                </div>
-                <div class="detail-item">
-                    <i class="fas fa-door-closed"></i>
-                    <span>Кабинет: <strong>101</strong></span>
-                </div>
-                <div class="detail-item">
-                    <i class="fas fa-graduation-cap"></i>
-                    <span>РНИМУ им. Пирогова</span>
-                </div>
-            </div>
-            
-            <div class="doctor-rating">
-                <div class="stars">
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                    <i class="far fa-star"></i>
-                </div>
-                <span class="rating-text">4.2 (89 отзывов)</span>
-            </div>
-            
-            <div class="doctor-actions">
-                <a href="#" class="btn btn-outline">
-                    <i class="fas fa-info-circle"></i> Подробнее
-                </a>
-                <a href="{% url 'appointment_create' %}" class="btn btn-primary">
-                    <i class="fas fa-calendar-check"></i> Записаться
-                </a>
-            </div>
-        </div>
-    </div>
-    
-    <div class="doctor-card" data-specialty="Хирург" data-name="Алексей Козлов">
-        <div class="doctor-header">
-            {% if doctor_images.2 %}
-            <img src="{% static 'images/doctors/doctor3.jpg' %}" alt="Алексей Козлов" class="doctor-image">
-            {% else %}
-            <div class="doctor-image" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 4rem;">
-                <i class="fas fa-user-md"></i>
-            </div>
-            {% endif %}
-            <div class="doctor-category">Высшая категория</div>
-            <div class="doctor-availability unavailable">Не принимает</div>
-        </div>
-        <div class="doctor-info">
-            <h3 class="doctor-name">Др. Алексей Козлов</h3>
-            <p class="doctor-specialty">Хирург</p>
-            
-            <div class="doctor-details">
-                <div class="detail-item">
-                    <i class="fas fa-briefcase-medical"></i>
-                    <span>Стаж работы: <strong>8 лет</strong></span>
-                </div>
-                <div class="detail-item">
-                    <i class="fas fa-door-closed"></i>
-                    <span>Кабинет: <strong>201</strong></span>
-                </div>
-                <div class="detail-item">
-                    <i class="fas fa-graduation-cap"></i>
-                    <span>МГМСУ им. Евдокимова</span>
-                </div>
-            </div>
-            
-            <div class="doctor-rating">
-                <div class="stars">
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                </div>
-                <span class="rating-text">5.0 (203 отзыва)</span>
-            </div>
-            
-            <div class="doctor-actions">
-                <a href="#" class="btn btn-outline">
-                    <i class="fas fa-info-circle"></i> Подробнее
-                </a>
-                <a href="{% url 'appointment_create' %}" class="btn btn-primary" style="opacity: 0.7;">
-                    <i class="fas fa-calendar-check"></i> Записаться
-                </a>
-            </div>
-        </div>
-    </div>
-    
-    <div class="doctor-card" data-specialty="Невролог" data-name="Ольга Смирнова">
-        <div class="doctor-header">
-            <div class="doctor-image" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 4rem;">
-                <i class="fas fa-user-md"></i>
-            </div>
-            <div class="doctor-category">Кандидат наук</div>
-            <div class="doctor-availability">Принимает сейчас</div>
-        </div>
-        <div class="doctor-info">
-            <h3 class="doctor-name">Др. Ольга Смирнова</h3>
-            <p class="doctor-specialty">Невролог</p>
-            
-            <div class="doctor-details">
-                <div class="detail-item">
-                    <i class="fas fa-briefcase-medical"></i>
-                    <span>Стаж работы: <strong>12 лет</strong></span>
-                </div>
-                <div class="detail-item">
-                    <i class="fas fa-door-closed"></i>
-                    <span>Кабинет: <strong>205</strong></span>
-                </div>
-                <div class="detail-item">
-                    <i class="fas fa-graduation-cap"></i>
-                    <span>Московский медицинский университет</span>
-                </div>
-            </div>
-            
-            <div class="doctor-rating">
-                <div class="stars">
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star-half-alt"></i>
-                </div>
-                <span class="rating-text">4.8 (167 отзывов)</span>
-            </div>
-            
-            <div class="doctor-actions">
-                <a href="#" class="btn btn-outline">
-                    <i class="fas fa-info-circle"></i> Подробнее
-                </a>
-                <a href="{% url 'appointment_create' %}" class="btn btn-primary">
-                    <i class="fas fa-calendar-check"></i> Записаться
-                </a>
-            </div>
-        </div>
-    </div>
-</div>
 
-<div class="pagination">
-    <a href="#" class="page-link active">1</a>
-    <a href="#" class="page-link">2</a>
-    <a href="#" class="page-link">3</a>
-    <span>...</span>
-    <a href="#" class="page-link">5</a>
-</div>
+                <a href="{% url 'appointment_create' %}" class="btn btn-primary">
+                    <i class="fas fa-calendar-check"></i> Записаться
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {% endfor %}
+    
 {% endblock %}
 
 {% block extra_js %}

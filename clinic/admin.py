@@ -3,7 +3,7 @@ from django.contrib.auth.admin import UserAdmin
 from .models import (
     User, Doctor, Patient, Service, 
     Appointment, MedicalRecord, 
-    TelegramAuthToken, DoctorAccessCode
+    TelegramAuthToken, DoctorAccessCode, ServiceCategory
 )
 
 @admin.register(User)
@@ -34,8 +34,12 @@ class PatientAdmin(admin.ModelAdmin):
 
 @admin.register(Service)
 class ServiceAdmin(admin.ModelAdmin):
-    list_display = ('name', 'duration', 'price')
-    list_filter = ('price',)
+    list_display = ['name', 'category', 'price', 'duration', 'is_popular', 'is_active']
+    list_filter = ['category', 'is_popular', 'is_active']
+    search_fields = ['name', 'description']
+    prepopulated_fields = {'slug': ('name',)}
+    filter_horizontal = ['doctors']
+    ordering = ['order', 'name']
 
 @admin.register(Appointment)
 class AppointmentAdmin(admin.ModelAdmin):
@@ -55,3 +59,11 @@ class TelegramAuthTokenAdmin(admin.ModelAdmin):
 @admin.register(DoctorAccessCode)
 class DoctorAccessCodeAdmin(admin.ModelAdmin):
     list_display = ('code', 'created_by', 'is_used', 'expires_at')
+
+@admin.register(ServiceCategory)
+class ServiceCategoryAdmin(admin.ModelAdmin):
+    list_display = ['name', 'slug', 'icon', 'order', 'is_active']
+    list_filter = ['is_active']
+    search_fields = ['name', 'slug']
+    prepopulated_fields = {'slug': ('name',)}
+    ordering = ['order', 'name']

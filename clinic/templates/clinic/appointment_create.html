@@ -1,6 +1,9 @@
 {% extends 'clinic/base.html' %}
 {% load static %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/form_appointment.css' %}" />
 
+{% endblock %}
 {% block content %}
 <div class="container py-4">
     <div class="row justify-content-center">

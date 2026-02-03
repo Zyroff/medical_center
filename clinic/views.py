@@ -1,3 +1,4 @@
+from .models import ServiceCategory
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from .forms import PatientRegistrationForm, AppointmentForm
@@ -148,7 +149,13 @@ class ServiceListView(ListView):
     model = Service
     template_name = 'clinic/service_list.html'
     context_object_name = 'services'
-    queryset = Service.objects.all().order_by('name')
+    queryset = Service.objects.filter(is_active=True).order_by('order', 'name')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Добавляем категории в контекст
+        context['categories'] = ServiceCategory.objects.all().order_by('order', 'name')
+        return context
 
 @method_decorator(login_required(login_url='/login/'), name='dispatch')
 class AppointmentCreateView(CreateView):

@@ -203,25 +203,100 @@ class Doctor(models.Model):
         ordering = ['-rating', 'specialization']
 
 
-class Service(models.Model):
-    """Услуга"""
-    name = models.CharField(max_length=200, verbose_name='Название услуги')
-    duration = models.IntegerField(verbose_name='Длительность (мин)', default=30)
-    price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Цена')
-    
-    doctors = models.ManyToManyField(
-        'Doctor', 
-        related_name='services', 
-        blank=True,
-        verbose_name='Врачи, оказывающие услугу'
+class ServiceCategory(models.Model):
+    """Категория услуги"""
+    name = models.CharField(max_length=100, verbose_name='Название категории')
+    slug = models.SlugField(max_length=100, unique=True, verbose_name='URL-идентификатор')
+    icon = models.CharField(
+        max_length=50, 
+        default='stethoscope', 
+        verbose_name='Иконка (Font Awesome)',
+        help_text='Название иконки из Font Awesome, например: stethoscope, heart, thermometer'
     )
+    description = models.TextField(blank=True, verbose_name='Описание')
+    order = models.IntegerField(default=0, verbose_name='Порядок отображения')
+    is_active = models.BooleanField(default=True, verbose_name='Активна')
     
     def __str__(self):
         return self.name
     
     class Meta:
+        verbose_name = 'Категория услуги'
+        verbose_name_plural = 'Категории услуг'
+        ordering = ['order', 'name']
+
+class Service(models.Model):
+    """Медицинская услуга"""
+    name = models.CharField(max_length=200, verbose_name='Название услуги')
+    slug = models.SlugField(max_length=200, unique=True, verbose_name='URL-идентификатор')
+    description = models.TextField(verbose_name='Краткое описание')
+    full_description = models.TextField(blank=True, verbose_name='Полное описание')
+    price = models.DecimalField(
+        max_digits=10, 
+        decimal_places=2, 
+        verbose_name='Цена (руб.)'
+    )
+    duration = models.IntegerField(
+        verbose_name='Длительность (минуты)',
+        help_text="Длительность в минутах"
+    )
+    category = models.ForeignKey(
+        ServiceCategory, 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True,
+        related_name='services',
+        verbose_name='Категория'
+    )
+    
+    # Для врачей, которые предоставляют эту услугу
+    doctors = models.ManyToManyField(
+        Doctor, 
+        related_name='services_offered',
+        blank=True,
+        verbose_name='Врачи'
+    )
+    
+    # Дополнительные поля
+    is_popular = models.BooleanField(default=False, verbose_name='Популярная услуга')
+    is_active = models.BooleanField(default=True, verbose_name='Активна')
+    icon = models.CharField(
+        max_length=50, 
+        default='stethoscope', 
+        verbose_name='Иконка',
+        help_text='Название иконки из Font Awesome'
+    )
+    color_gradient = models.CharField(
+        max_length=100, 
+        default='#4facfe, #00f2fe',
+        verbose_name='Градиент цвета',
+        help_text='Два цвета через запятую для градиента'
+    )
+    image = models.ImageField(
+        upload_to='services/', 
+        null=True, 
+        blank=True,
+        verbose_name='Изображение'
+    )
+    order = models.IntegerField(default=0, verbose_name='Порядок отображения')
+    
+    # SEO поля
+    meta_title = models.CharField(max_length=200, blank=True, verbose_name='Мета-заголовок')
+    meta_description = models.TextField(blank=True, verbose_name='Мета-описание')
+    
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
+    updated_at = models.DateTimeField(auto_now=True, verbose_name='Дата обновления')
+    
+    def __str__(self):
+        return f"{self.name} - {self.price} руб."
+    
+    def get_absolute_url(self):
+        return reverse('service_detail', kwargs={'slug': self.slug})
+    
+    class Meta:
         verbose_name = 'Услуга'
         verbose_name_plural = 'Услуги'
+        ordering = ['order', 'name']
 
 
 

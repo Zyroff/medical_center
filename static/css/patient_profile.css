@@ -1,0 +1,394 @@
+/* Общие стили для страницы профиля */
+main .container {
+    max-width: 1200px;
+    margin: 3rem auto;
+    padding: 0 20px;
+    animation: fadeInUp 0.6s ease forwards;
+}
+
+/* Заголовок */
+.page-header {
+    margin-bottom: 30px;
+}
+
+.page-header h2 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 2.2rem;
+    color: var(--dark-color);
+    position: relative;
+    padding-bottom: 15px;
+}
+
+.page-header h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    border-radius: 2px;
+}
+
+/* Сетка профиля */
+.profile-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-top: 20px;
+}
+
+@media (max-width: 992px) {
+    .profile-grid {
+        grid-template-columns: 1fr;
+        gap: 25px;
+    }
+}
+
+/* Карточки профиля */
+.profile-card {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border: none;
+    height: 100%;
+}
+
+.profile-card:hover {
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+    transform: translateY(-5px);
+}
+
+.profile-card h3 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: var(--dark-color);
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f0f0f0;
+    position: relative;
+}
+
+.profile-card h3::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 60px;
+    height: 2px;
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+}
+
+/* Информация о пользователе */
+.info-grid {
+    display: grid;
+    gap: 18px;
+}
+
+.info-item {
+    display: grid;
+    gap: 6px;
+}
+
+.info-label {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    color: var(--dark-color);
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.info-label i {
+    color: var(--primary-color);
+    font-size: 1.1rem;
+    width: 20px;
+}
+
+.info-value {
+    color: var(--gray-color);
+    font-size: 1rem;
+    padding-left: 28px;
+    line-height: 1.5;
+}
+
+/* Записи на прием */
+.appointments-list {
+    display: grid;
+    gap: 20px;
+}
+
+.appointment-item {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 20px;
+    border-left: 4px solid var(--primary-color);
+    transition: all 0.3s ease;
+}
+
+.appointment-item:hover {
+    background: #f0f7ff;
+    transform: translateX(5px);
+}
+
+.appointment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.appointment-specialization {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    color: var(--dark-color);
+    font-size: 1.1rem;
+}
+
+.appointment-doctor {
+    color: var(--gray-color);
+    font-size: 0.95rem;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.appointment-doctor i {
+    color: var(--primary-color);
+}
+
+.appointment-date {
+    color: var(--gray-color);
+    font-size: 0.95rem;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.appointment-date i {
+    color: var(--primary-color);
+}
+
+/* Статусы записей */
+.status-badge {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    font-family: 'Montserrat', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-confirmed {
+    background: linear-gradient(135deg, #d4edda, #c3e6cb);
+    color: #155724;
+    border: 1px solid #b1dfbb;
+}
+
+.status-pending {
+    background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+
+.status-cancelled {
+    background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.status-default {
+    background: linear-gradient(135deg, #e2e3e5, #d6d8db);
+    color: #383d41;
+    border: 1px solid #d6d8db;
+}
+
+/* Ссылки и действия */
+.profile-actions {
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.action-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    padding: 10px 0;
+}
+
+.action-link:hover {
+    color: var(--primary-dark);
+    transform: translateX(5px);
+}
+
+.action-link i {
+    font-size: 1.1rem;
+    transition: transform 0.3s ease;
+}
+
+.action-link:hover i {
+    transform: translateX(3px);
+}
+
+/* Сообщение об отсутствии профиля */
+.no-profile-message {
+    background: linear-gradient(135deg, rgba(255, 193, 7, 0.1), rgba(255, 193, 7, 0.05));
+    border-radius: 15px;
+    padding: 40px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    border-left: 5px solid #ffc107;
+}
+
+.no-profile-message h3 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    color: #856404;
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+}
+
+.no-profile-message p {
+    color: #856404;
+    margin-bottom: 15px;
+    line-height: 1.6;
+    font-size: 1.05rem;
+}
+
+/* Кнопка записи */
+.btn-appointment {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+    color: white;
+    padding: 14px 28px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 600;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    border: none;
+    margin-top: 20px;
+    box-shadow: 0 4px 15px rgba(44, 128, 255, 0.3);
+}
+
+.btn-appointment:hover {
+    background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(44, 128, 255, 0.4);
+    color: white;
+}
+
+/* Анимации */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .container {
+        margin: 2rem auto;
+        padding: 0 15px;
+    }
+    
+    .page-header h2 {
+        font-size: 1.8rem;
+    }
+    
+    .profile-card {
+        padding: 25px 20px;
+    }
+    
+    .profile-card h3 {
+        font-size: 1.3rem;
+        margin-bottom: 20px;
+    }
+    
+    .info-value {
+        font-size: 0.95rem;
+    }
+    
+    .appointment-item {
+        padding: 18px 15px;
+    }
+    
+    .appointment-header {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+    }
+    
+    .status-badge {
+        align-self: flex-start;
+    }
+    
+    .no-profile-message {
+        padding: 30px 20px;
+    }
+}
+
+@media (max-width: 576px) {
+    .page-header h2 {
+        font-size: 1.6rem;
+    }
+    
+    .profile-card h3 {
+        font-size: 1.2rem;
+    }
+    
+    .info-label {
+        font-size: 0.9rem;
+    }
+    
+    .info-value {
+        font-size: 0.9rem;
+    }
+    
+    .btn-appointment {
+        padding: 12px 24px;
+        font-size: 0.95rem;
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* Дополнительные стили для иконок */
+.icon-wrapper {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, rgba(44, 128, 255, 0.1), rgba(0, 201, 167, 0.1));
+    border-radius: 10px;
+    margin-right: 10px;
+    color: var(--primary-color);
+}

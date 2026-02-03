@@ -1,84 +1,193 @@
 {% extends 'clinic/base.html' %}
-{% block style%}
-<style>
-    .span-confirmed{
-         background: #d4edda;
-    } 
-    .span-pending {
-        background: #fff3cd;
-    }
-    .span-cancelled {
-        background: #f8d7da;
-    }
-    .span-default {
-        background: #e2e3e5;
-    }
-</style>
-{% endblock %}
-{% block content %}
-<h2>Мой профиль</h2>
+{% load static %}
 
-{% if patient %}
-<div style="display: grid; gap: 2rem; grid-template-columns: 1fr 1fr;">
-    
-    <div style="border: 1px solid #ddd; padding: 1.5rem; border-radius: 5px;">
-        <h3>Личная информация</h3>
-        <div style="display: grid; gap: 0.5rem;">
-            <p><strong>ФИО:</strong> {{ patient.user.get_full_name }}</p>
-            <p><strong>Имя пользователя:</strong> {{ patient.user.username }}</p>
-            <p><strong>Телефон:</strong> {{ patient.phone }}</p>
-            <p><strong>Дата рождения:</strong> {{ patient.birth_date }}</p>
-            {% if patient.address %}
-                <p><strong>Адрес:</strong> {{ patient.address }}</p>
-            {% endif %}
-            {% if patient.telegram_id %}
-                <p><strong>Telegram ID:</strong> {{ patient.telegram_id }}</p>
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/patient_profile.css' %}" />
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h2>
+            <i class="fas fa-user-circle me-2"></i>Мой профиль
+        </h2>
+    </div>
+
+    {% if patient %}
+    <div class="profile-grid">
+        
+        <!-- Левая колонка: Личная информация -->
+        <div class="profile-card">
+            <h3>
+                <i class="fas fa-user me-2"></i>Личная информация
+            </h3>
+            
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">
+                        <i class="fas fa-id-card"></i>ФИО
+                    </div>
+                    <div class="info-value">
+                        {{ patient.user.get_full_name }}
+                    </div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-label">
+                        <i class="fas fa-user"></i>Имя пользователя
+                    </div>
+                    <div class="info-value">
+                        {{ patient.user.username }}
+                    </div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-label">
+                        <i class="fas fa-phone"></i>Телефон
+                    </div>
+                    <div class="info-value">
+                        {{ patient.phone }}
+                    </div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-label">
+                        <i class="fas fa-birthday-cake"></i>Дата рождения
+                    </div>
+                    <div class="info-value">
+                        {{ patient.birth_date }}
+                    </div>
+                </div>
+                
+                {% if patient.address %}
+                <div class="info-item">
+                    <div class="info-label">
+                        <i class="fas fa-home"></i>Адрес
+                    </div>
+                    <div class="info-value">
+                        {{ patient.address }}
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% if patient.telegram_id %}
+                <div class="info-item">
+                    <div class="info-label">
+                        <i class="fab fa-telegram"></i>Telegram ID
+                    </div>
+                    <div class="info-value">
+                        {{ patient.telegram_id }}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            
+        </div>
+
+        <!-- Правая колонка: Последние записи -->
+        <div class="profile-card">
+            <h3>
+                <i class="fas fa-calendar-alt me-2"></i>Последние записи
+            </h3>
+            
+            {% if appointments %}
+                <div class="appointments-list">
+                    {% for appointment in appointments %}
+                    <div class="appointment-item">
+                        <div class="appointment-header">
+                            <div class="appointment-specialization">
+                                {{ appointment.doctor.specialization }}
+                            </div>
+                            <span class="status-badge {% if appointment.status == 'confirmed' %}status-confirmed
+                                {% elif appointment.status == 'pending' %}status-pending
+                                {% elif appointment.status == 'cancelled' %}status-cancelled
+                                {% else %}status-default{% endif %}">
+                                {{ appointment.get_status_display }}
+                            </span>
+                        </div>
+                        
+                        <div class="appointment-doctor">
+                            <i class="fas fa-user-md"></i>Доктор: {{ appointment.doctor.user.get_full_name }}
+                        </div>
+                        
+                        <div class="appointment-date">
+                            <i class="fas fa-clock"></i>Дата: {{ appointment.date_time|date:"d.m.Y H:i" }}
+                        </div>
+                        
+                        {% if appointment.notes %}
+                        <div class="appointment-notes">
+                            <i class="fas fa-sticky-note"></i>Примечание: {{ appointment.notes|truncatechars:100 }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <div class="profile-actions">
+                    <a href="{% url 'appointment_list' %}" class="action-link">
+                        <i class="fas fa-list"></i>Все записи
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            {% else %}
+                <div style="text-align: center; padding: 30px 0;">
+                    <div style="margin-bottom: 20px;">
+                        <i class="fas fa-calendar-plus" style="font-size: 3rem; color: var(--primary-color); opacity: 0.3;"></i>
+                    </div>
+                    <p style="color: var(--gray-color); font-size: 1.1rem; margin-bottom: 20px;">
+                        У вас пока нет записей на прием.
+                    </p>
+                    <a href="{% url 'appointment_create' %}" class="btn-appointment">
+                        <i class="fas fa-calendar-plus"></i>Записаться на прием
+                    </a>
+                </div>
             {% endif %}
         </div>
+
     </div>
 
-    <div style="border: 1px solid #ddd; padding: 1.5rem; border-radius: 5px;">
-        <h3>Последние записи</h3>
-        {% if appointments %}
-            <div style="display: grid; gap: 1rem;">
-                {% for appointment in appointments %}
-                <div style="border-bottom: 1px solid #eee; padding-bottom: 0.5rem;">
-                    <p><strong>{{ appointment.doctor.specialization }}</strong></p>
-                    <p>Доктор: {{ appointment.doctor.user.get_full_name }}</p>
-                    <p>Дата: {{ appointment.date_time|date:"d.m.Y H:i" }}</p>
-                    <p>Статус: 
-                        <span style="
-                            padding: 0.1rem 0.3rem;
-                            border-radius: 3px;
-                            font-size: 0.8rem;
-                        "
-                        class="{% if appointment.status == 'confirmed' %}status-confirmed
-                {% elif appointment.status == 'pending' %}status-pending
-                {% elif appointment.status == 'cancelled' %}status-cancelled
-                {% else %}status-default{% endif %}">
-                            {{ appointment.get_status_display }}
-                        </span>
-                    </p>
-                </div>
-                {% endfor %}
-            </div>
-            <div style="margin-top: 1rem;">
-                <a href="{% url 'appointment_list' %}">Все записи →</a>
-            </div>
-        {% else %}
-            <p>У вас пока нет записей на прием.</p>
-            <a href="{% url 'appointment_create' %}">Записаться на прием</a>
-        {% endif %}
+    {% else %}
+    <div class="no-profile-message">
+        <h3>
+            <i class="fas fa-exclamation-triangle me-2"></i>Профиль пациента не найден
+        </h3>
+        <p>Ваш пользователь не привязан к профилю пациента.</p>
+        <p>Обратитесь к администратору для настройки профиля.</p>
+        <div style="margin-top: 25px;">
+            <a href="{% url 'home' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Вернуться на главную
+            </a>
+        </div>
     </div>
+    {% endif %}
 
 </div>
 
-{% else %}
-<div style="background: #fff3cd; padding: 1.5rem; border-radius: 5px; text-align: center;">
-    <h3>Профиль пациента не найден</h3>
-    <p>Ваш пользователь не привязан к профилю пациента.</p>
-    <p>Обратитесь к администратору для настройки профиля.</p>
-</div>
-{% endif %}
-
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Анимация при наведении на карточки
+    const cards = document.querySelectorAll('.profile-card');
+    cards.forEach(card => {
+        card.addEventListener('mouseenter', () => {
+            card.style.transform = 'translateY(-5px)';
+        });
+        
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = 'translateY(0)';
+        });
+    });
+    
+    // Анимация для статусов
+    const statusBadges = document.querySelectorAll('.status-badge');
+    statusBadges.forEach(badge => {
+        badge.addEventListener('mouseenter', () => {
+            badge.style.transform = 'scale(1.05)';
+        });
+        
+        badge.addEventListener('mouseleave', () => {
+            badge.style.transform = 'scale(1)';
+        });
+    });
+});
+</script>
 {% endblock %}
