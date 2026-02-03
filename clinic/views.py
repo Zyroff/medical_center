@@ -16,10 +16,9 @@ from django.urls import reverse_lazy
 from django.utils import timezone
 import json
 import logging
-
 from .models import Patient, Doctor, Service, Appointment, MedicalRecord, User, TelegramAuthToken
 from .forms import AppointmentForm
-from .services.telegram_service import telegram_service
+# from .services.telegram_service import telegram_service
 
 logger = logging.getLogger(__name__)
 
